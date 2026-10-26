@@ -159,7 +159,7 @@ export default function VideoStudio({ params }: RouteProps) {
   return (
     <div className="flex h-full flex-col">
       <TitleBar>
-        <span className="text-[13px] font-medium text-neutral-400">
+        <span className="text-[13px] font-medium text-neutral-600">
           {stage === 'pick' ? 'Record screen' : 'Video'}
         </span>
         <div className="flex-1" />
@@ -189,10 +189,13 @@ export default function VideoStudio({ params }: RouteProps) {
 
       {stage === 'countdown' && (
         <div className="flex flex-1 flex-col items-center justify-center">
-          <div key={count} className="countdown text-[120px] leading-none font-bold text-white">
+          <div
+            key={count}
+            className="countdown text-[120px] leading-none font-bold text-neutral-900"
+          >
             {count}
           </div>
-          <p className="mt-6 text-sm text-neutral-400">Recording starts when this window hides</p>
+          <p className="mt-6 text-sm text-neutral-600">Recording starts when this window hides</p>
         </div>
       )}
 
@@ -201,7 +204,7 @@ export default function VideoStudio({ params }: RouteProps) {
           <div className="flex items-center gap-2 text-sm font-bold text-x-red">
             <span className="size-2.5 animate-pulse rounded-full bg-x-red" /> Recording
           </div>
-          <p className="max-w-sm text-sm text-neutral-400">
+          <p className="max-w-sm text-sm text-neutral-600">
             Stop with{' '}
             {stopKeys.map((k, i) => (
               <Kbd key={i}>{k}</Kbd>
@@ -215,7 +218,7 @@ export default function VideoStudio({ params }: RouteProps) {
       )}
 
       {stage === 'processing' && (
-        <div className="flex flex-1 items-center justify-center gap-2 text-sm text-neutral-400">
+        <div className="flex flex-1 items-center justify-center gap-2 text-sm text-neutral-600">
           <Loader2 className="size-4 animate-spin" /> Preparing your video…
         </div>
       )}

@@ -64,7 +64,7 @@ export function Timeline({
   const pct = (t: number) => `${(t / duration) * 100}%`
 
   return (
-    <div className="shrink-0 border-t border-neutral-800/80 bg-neutral-950 px-5 pt-3 pb-4">
+    <div className="shrink-0 border-t border-neutral-100 bg-white px-5 pt-3 pb-4">
       <div className="mb-2.5 flex items-center gap-3">
         <Button
           size="sm"
@@ -76,26 +76,26 @@ export function Timeline({
         >
           {playing ? 'Pause' : 'Play'}
         </Button>
-        <span className="text-xs text-neutral-300 tabular-nums">
+        <span className="text-xs text-neutral-800 tabular-nums">
           {formatTime(time, true)}{' '}
-          <span className="text-neutral-500">/ {formatTime(duration, true)}</span>
+          <span className="text-neutral-600">/ {formatTime(duration, true)}</span>
         </span>
         <div className="flex-1" />
-        <span className="text-xs text-neutral-400">
+        <span className="text-xs text-neutral-600">
           Clip{' '}
-          <span className="text-neutral-200 tabular-nums">{formatTime(end - start, true)}</span>
+          <span className="text-neutral-900 tabular-nums">{formatTime(end - start, true)}</span>
           {end - start > 140 && (
             <span className="ml-2 text-x-yellow">Over 2:20, longer videos may need X Premium</span>
           )}
         </span>
-        <span className="hidden items-center gap-1 text-[11px] text-neutral-500 lg:flex">
+        <span className="hidden items-center gap-1 text-[11px] text-neutral-600 lg:flex">
           Trim at playhead <Kbd>I</Kbd> <Kbd>O</Kbd>
         </span>
       </div>
 
       <div
         ref={trackRef}
-        className="relative h-14 cursor-pointer touch-none overflow-hidden rounded-lg bg-neutral-900 ring-1 ring-neutral-800 select-none"
+        className="relative h-14 cursor-pointer touch-none overflow-hidden rounded-lg bg-neutral-50 ring-1 ring-neutral-200 select-none"
         onPointerDown={begin('seek')}
         onPointerMove={(e) => apply(e, 'transient')}
         onPointerUp={(e) => {
@@ -115,9 +115,9 @@ export function Timeline({
           ))}
         </div>
         {/* Trimmed-away parts */}
-        <div className="absolute inset-y-0 left-0 bg-black/70" style={{ width: pct(start) }} />
+        <div className="absolute inset-y-0 left-0 bg-white/70" style={{ width: pct(start) }} />
         <div
-          className="absolute inset-y-0 right-0 bg-black/70"
+          className="absolute inset-y-0 right-0 bg-white/70"
           style={{ width: `calc(100% - ${pct(end)})` }}
         />
         {/* Kept range */}
@@ -140,7 +140,7 @@ export function Timeline({
         ))}
         {/* Playhead */}
         <div
-          className="pointer-events-none absolute inset-y-0 w-0.5 -translate-x-1/2 bg-white shadow"
+          className="pointer-events-none absolute inset-y-0 w-0.5 -translate-x-1/2 bg-neutral-900 shadow"
           style={{ left: pct(time) }}
         />
       </div>

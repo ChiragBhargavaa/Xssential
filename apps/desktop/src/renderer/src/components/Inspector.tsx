@@ -1,9 +1,9 @@
 import { Trash2 } from 'lucide-react'
-import type { Composition, FramePreset, Redaction, RedactStyle } from '../lib/composition'
+import type { Composition, FramePreset, Redaction } from '../lib/composition'
 import type { HistoryMode } from '../lib/hooks'
 import { formatTime, isMac } from '../lib/utils'
 import { BackgroundPicker, FramePicker } from './StylePickers'
-import { Button, Kbd, Section, Segmented, Slider, Toggle } from './ui'
+import { Button, Kbd, Section, Slider, Toggle } from './ui'
 
 type Update = (fn: (c: Composition) => Composition, mode?: HistoryMode) => void
 
@@ -70,14 +70,8 @@ export function StyleSections({
 }
 
 export interface RedactionDefaults {
-  style: RedactStyle
   strength: number
 }
-
-const styleOptions: { value: RedactStyle; label: string }[] = [
-  { value: 'pixelate', label: 'Pixelate' },
-  { value: 'blur', label: 'Blur' },
-]
 
 export function RedactionSection({
   comp,
@@ -118,12 +112,12 @@ export function RedactionSection({
 
   return (
     <Section
-      title="Blur & pixelate"
+      title="Blur"
       action={
         comp.redactions.length > 0 && (
           <button
             type="button"
-            className="text-xs text-neutral-500 hover:text-neutral-200"
+            className="text-xs text-neutral-600 hover:text-neutral-900"
             onClick={() => {
               update((c) => ({ ...c, redactions: [] }))
               onSelect(null)
@@ -134,24 +128,16 @@ export function RedactionSection({
         )
       }
     >
-      <p className="mb-3 text-xs leading-relaxed text-neutral-500">
+      <p className="mb-3 text-xs leading-relaxed text-neutral-600">
         {selected ? (
           'Editing the selected area.'
         ) : (
           <>
-            Pick the blur tool (<Kbd>B</Kbd>) and drag over anything private. Pixelate hides text
-            more reliably than blur.
+            Pick the blur tool (<Kbd>B</Kbd>) and drag over anything private.
           </>
         )}
       </p>
       <div className="space-y-4">
-        <Segmented
-          value={target.style}
-          options={styleOptions}
-          onChange={(style) =>
-            selected ? patchSelected({ style }) : onDefaultsChange({ ...defaults, style })
-          }
-        />
         <Slider
           label="Strength"
           value={target.strength}
@@ -165,7 +151,7 @@ export function RedactionSection({
         />
 
         {selected && video && (
-          <div className="space-y-2.5 rounded-lg bg-neutral-900 p-3 ring-1 ring-neutral-800">
+          <div className="space-y-2.5 rounded-lg bg-neutral-50 p-3 ring-1 ring-neutral-200">
             <Toggle
               label="Whole video"
               description="Turn off to hide this area only part of the time."
@@ -182,9 +168,9 @@ export function RedactionSection({
               <div className="space-y-1.5 text-xs">
                 {(['start', 'end'] as const).map((edge) => (
                   <div key={edge} className="flex items-center justify-between gap-2">
-                    <span className="text-neutral-400">
+                    <span className="text-neutral-600">
                       {edge === 'start' ? 'From' : 'Until'}{' '}
-                      <span className="text-neutral-200 tabular-nums">
+                      <span className="text-neutral-900 tabular-nums">
                         {formatTime(
                           selected[edge] ?? (edge === 'start' ? 0 : video.duration),
                           true,

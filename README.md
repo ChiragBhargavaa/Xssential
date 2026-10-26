@@ -29,13 +29,13 @@ Xssential lives in the menu bar (macOS) or the notification area (Windows). Pres
 <kbd>⌥</kbd> <kbd>⇧</kbd> <kbd>X</kbd> (<kbd>Alt</kbd>+<kbd>Shift</kbd>+<kbd>X</kbd> on Windows) anywhere to open the
 tool wheel, then click a tool or press its number (1–6). The shortcut can be changed in Settings.
 
-| Tool           | What it does                                                                                                                                                                                                                                                     |
-| -------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| **Screenshot** | Freezes the screen so you can drag out an area, then opens it in the editor: crop, blur or pixelate private details, round the corners, add a shadow and a gradient, color or image background, and fit it to an X post size. Copy it or save it as PNG or JPEG. |
-| **Record**     | Records a screen or a window to MP4, then opens the video editor.                                                                                                                                                                                                |
-| **Edit video** | Opens your own video. Trim, crop, blur or pixelate areas (for the whole clip or part of it), remove the original sound, add background music and export an MP4 for X.                                                                                            |
-| **Carousel**   | Splits a long screenshot (or a wide panorama) into same-size slides for X's swipeable multi-image posts, cutting between lines of text instead of through them.                                                                                                  |
-| **Edit image** | The screenshot editor for an image you already have (open, paste or drop it).                                                                                                                                                                                    |
+| Tool           | What it does                                                                                                                                                                                                                                         |
+| -------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **Screenshot** | Freezes the screen so you can drag out an area, then opens it in the editor: crop, blur private details, round the corners, add a shadow and a gradient, color or image background, and fit it to an X post size. Copy it or save it as PNG or JPEG. |
+| **Record**     | Records a screen or a window to MP4, then opens the video editor.                                                                                                                                                                                    |
+| **Edit video** | Opens your own video. Trim, crop, blur areas (for the whole clip or part of it), remove the original sound, add background music and export an MP4 for X.                                                                                            |
+| **Carousel**   | Splits a long screenshot (or a wide panorama) into same-size slides for X's swipeable multi-image posts, cutting between lines of text instead of through them.                                                                                      |
+| **Edit image** | The screenshot editor for an image you already have (open, paste or drop it).                                                                                                                                                                        |
 
 ### X sizes used
 

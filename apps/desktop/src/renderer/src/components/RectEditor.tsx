@@ -113,7 +113,7 @@ export function RectEditor({
       className={cx(
         'absolute',
         variant === 'crop'
-          ? 'cursor-move border border-white/90 shadow-[0_0_0_9999px_rgba(0,0,0,0.6)]'
+          ? 'cursor-move border border-x-blue shadow-[0_0_0_9999px_rgba(255,255,255,0.75)]'
           : cx(
               'cursor-move border-[1.5px]',
               selected ? 'border-x-blue' : 'border-white/60 border-dashed hover:border-white/90',
@@ -127,10 +127,10 @@ export function RectEditor({
     >
       {variant === 'crop' && (
         <div className="pointer-events-none absolute inset-0">
-          <div className="absolute inset-y-0 left-1/3 w-px bg-white/25" />
-          <div className="absolute inset-y-0 left-2/3 w-px bg-white/25" />
-          <div className="absolute inset-x-0 top-1/3 h-px bg-white/25" />
-          <div className="absolute inset-x-0 top-2/3 h-px bg-white/25" />
+          <div className="absolute inset-y-0 left-1/3 w-px bg-x-blue/30" />
+          <div className="absolute inset-y-0 left-2/3 w-px bg-x-blue/30" />
+          <div className="absolute inset-x-0 top-1/3 h-px bg-x-blue/30" />
+          <div className="absolute inset-x-0 top-2/3 h-px bg-x-blue/30" />
         </div>
       )}
       {children}

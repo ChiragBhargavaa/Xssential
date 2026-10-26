@@ -5,7 +5,7 @@ import { GRADIENTS, SOLIDS } from '../lib/presets'
 import { cx } from '../lib/utils'
 
 const swatch =
-  'size-7 shrink-0 rounded-full ring-1 ring-white/15 transition-transform hover:scale-110 [-webkit-app-region:no-drag]'
+  'size-7 shrink-0 rounded-full ring-1 ring-black/10 transition-transform hover:scale-110 [-webkit-app-region:no-drag]'
 const selected = 'outline-2 outline-offset-2 outline-x-blue'
 
 const gradientCss = (stops: string[], angle: number) =>
@@ -81,7 +81,7 @@ export function BackgroundPicker({
         onClick={() => fileInput.current?.click()}
         className={cx(
           swatch,
-          'flex items-center justify-center bg-neutral-800 text-neutral-300',
+          'flex items-center justify-center bg-neutral-100 text-neutral-800',
           value.kind === 'image' && selected,
         )}
         style={
@@ -123,7 +123,7 @@ function RatioBox({ frame, active }: { frame: FramePreset; active: boolean }) {
         className={cx(
           'rounded-[3px] border-[1.5px]',
           frame.width ? '' : 'border-dashed',
-          active ? 'border-x-blue' : 'border-neutral-500',
+          active ? 'border-x-blue' : 'border-neutral-300',
         )}
         style={{ width: w, height: h }}
       />
@@ -158,20 +158,20 @@ export function FramePicker({
               className={cx(
                 'flex flex-col items-center gap-1 rounded-xl px-1 py-2 text-xs ring-1 transition-colors',
                 active
-                  ? 'bg-x-blue/10 text-neutral-100 ring-x-blue'
-                  : 'bg-neutral-950 text-neutral-500 ring-neutral-800 hover:bg-neutral-900 hover:text-neutral-200',
+                  ? 'bg-x-blue/10 text-neutral-900 ring-x-blue'
+                  : 'bg-white text-neutral-600 ring-neutral-200 hover:bg-neutral-50 hover:text-neutral-900',
               )}
             >
               <RatioBox frame={f} active={active} />
               <span className="leading-tight font-bold">{f.label}</span>
-              <span className="leading-none text-neutral-500">{f.ratio}</span>
+              <span className="leading-none text-neutral-600">{f.ratio}</span>
             </button>
           )
         })}
       </div>
-      <p className="mt-2.5 text-[13px] leading-relaxed text-neutral-500">
+      <p className="mt-2.5 text-[13px] leading-relaxed text-neutral-600">
         {size && (
-          <span className="font-bold text-neutral-200 tabular-nums">
+          <span className="font-bold text-neutral-900 tabular-nums">
             {Math.round(size.width)} × {Math.round(size.height)}
           </span>
         )}

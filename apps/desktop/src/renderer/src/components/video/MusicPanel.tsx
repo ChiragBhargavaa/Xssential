@@ -66,18 +66,18 @@ function TrackRow({
   onUse: () => void
 }) {
   return (
-    <div className="flex items-center gap-2 rounded-lg px-1.5 py-1.5 hover:bg-neutral-900">
+    <div className="flex items-center gap-2 rounded-lg px-1.5 py-1.5 hover:bg-neutral-50">
       <button
         type="button"
         aria-label={previewing ? 'Stop preview' : 'Preview'}
         onClick={onPreview}
-        className="flex size-7 shrink-0 items-center justify-center rounded-full bg-neutral-800 text-neutral-200 hover:bg-neutral-700"
+        className="flex size-7 shrink-0 items-center justify-center rounded-full bg-neutral-100 text-neutral-900 hover:bg-neutral-200"
       >
         {previewing ? <Pause className="size-3" /> : <Play className="ml-0.5 size-3" />}
       </button>
       <div className="min-w-0 flex-1">
-        <div className="truncate text-xs text-neutral-100">{track.title}</div>
-        <div className="truncate text-[11px] text-neutral-500">
+        <div className="truncate text-xs text-neutral-900">{track.title}</div>
+        <div className="truncate text-[11px] text-neutral-600">
           {track.creator}
           {track.duration ? ` · ${formatTime(track.duration)}` : ''} · {licenseLabel(track)}
         </div>
@@ -200,13 +200,13 @@ export function MusicPanel({
   if (music) {
     return (
       <div className="space-y-4">
-        <div className="flex items-start gap-3 rounded-xl bg-neutral-900 p-3 ring-1 ring-neutral-800">
+        <div className="flex items-start gap-3 rounded-xl bg-neutral-50 p-3 ring-1 ring-neutral-200">
           <div className="flex size-9 shrink-0 items-center justify-center rounded-full bg-x-blue">
             <Music className="size-4 text-white" />
           </div>
           <div className="min-w-0 flex-1">
-            <div className="truncate text-[13px] text-neutral-100">{music.title}</div>
-            <div className="truncate text-xs text-neutral-500">
+            <div className="truncate text-[13px] text-neutral-900">{music.title}</div>
+            <div className="truncate text-xs text-neutral-600">
               {[music.creator, music.license, formatTime(music.buffer.duration)]
                 .filter(Boolean)
                 .join(' · ')}
@@ -216,7 +216,7 @@ export function MusicPanel({
             type="button"
             aria-label="Remove music"
             onClick={() => onMusic(null)}
-            className="text-neutral-500 hover:text-neutral-200"
+            className="text-neutral-600 hover:text-neutral-900"
           >
             <X className="size-4" />
           </button>
@@ -245,9 +245,9 @@ export function MusicPanel({
         />
 
         {music.credit && (
-          <div className="rounded-xl bg-x-yellow/10 p-3 text-[13px] leading-relaxed text-neutral-200 ring-1 ring-x-yellow/25">
+          <div className="rounded-xl bg-x-yellow/10 p-3 text-[13px] leading-relaxed text-neutral-900 ring-1 ring-x-yellow/25">
             <p className="font-bold text-x-yellow">Credit the artist in your post</p>
-            <p className="mt-1 text-neutral-400">{music.credit}</p>
+            <p className="mt-1 text-neutral-600">{music.credit}</p>
             <div className="mt-2 flex gap-1">
               <Button
                 size="sm"
@@ -296,7 +296,7 @@ export function MusicPanel({
           <Button icon={FolderOpen} className="w-full" onClick={() => fileInput.current?.click()}>
             Choose an audio file
           </Button>
-          <p className="mt-2 text-xs leading-relaxed text-neutral-500">
+          <p className="mt-2 text-xs leading-relaxed text-neutral-600">
             MP3, M4A, WAV or OGG. Make sure you have the rights to use it.
           </p>
           <input
@@ -318,16 +318,16 @@ export function MusicPanel({
               e.preventDefault()
               void search(query)
             }}
-            className="flex items-center gap-2 rounded-full bg-neutral-900 px-3.5 ring-1 ring-neutral-900 focus-within:bg-neutral-950 focus-within:ring-x-blue"
+            className="flex items-center gap-2 rounded-full bg-neutral-100 px-3.5 ring-1 ring-neutral-100 focus-within:bg-white focus-within:ring-x-blue"
           >
-            <Search className="size-3.5 text-neutral-500" />
+            <Search className="size-3.5 text-neutral-600" />
             <input
               value={query}
               onChange={(e) => setQuery(e.target.value)}
               placeholder="Search free music"
-              className="h-8 min-w-0 flex-1 bg-transparent text-xs text-neutral-100 outline-none placeholder:text-neutral-500"
+              className="h-8 min-w-0 flex-1 bg-transparent text-xs text-neutral-900 outline-none placeholder:text-neutral-600"
             />
-            {searching && <Loader2 className="size-3.5 animate-spin text-neutral-500" />}
+            {searching && <Loader2 className="size-3.5 animate-spin text-neutral-600" />}
           </form>
           <div className="mt-2 flex flex-wrap gap-1">
             {MOODS.map((m) => (
@@ -338,8 +338,8 @@ export function MusicPanel({
                 className={cx(
                   'rounded-full px-2 py-0.5 text-[11px] ring-1 transition-colors',
                   query === m
-                    ? 'bg-neutral-100 font-bold text-neutral-950 ring-neutral-100'
-                    : 'text-neutral-400 ring-neutral-800 hover:text-neutral-200',
+                    ? 'bg-neutral-900 font-bold text-white ring-neutral-900'
+                    : 'text-neutral-600 ring-neutral-300 hover:text-neutral-900',
                 )}
               >
                 {m}
@@ -349,7 +349,7 @@ export function MusicPanel({
 
           {error && <p className="mt-3 text-xs text-x-red">{error}</p>}
           {results && results.length === 0 && !searching && (
-            <p className="mt-3 text-xs text-neutral-500">Nothing found. Try another word.</p>
+            <p className="mt-3 text-xs text-neutral-600">Nothing found. Try another word.</p>
           )}
           {results && results.length > 0 && (
             <div className="mt-2 -mx-1.5 max-h-72 overflow-y-auto">
@@ -376,13 +376,13 @@ export function MusicPanel({
               )}
             </div>
           )}
-          <p className="mt-3 text-xs leading-relaxed text-neutral-500">
+          <p className="mt-3 text-xs leading-relaxed text-neutral-600">
             Openly licensed music from{' '}
             <a
               href="https://openverse.org"
               target="_blank"
               rel="noreferrer"
-              className="underline hover:text-neutral-400"
+              className="underline hover:text-neutral-600"
             >
               Openverse
             </a>

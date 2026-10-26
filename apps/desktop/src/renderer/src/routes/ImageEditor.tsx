@@ -41,7 +41,7 @@ export default function ImageEditor() {
   const comp = history.value
   const [mode, setMode] = useState<StageMode>('select')
   const [selectedId, setSelectedId] = useState<string | null>(null)
-  const [defaults, setDefaults] = useState<RedactionDefaults>({ style: 'pixelate', strength: 60 })
+  const [defaults, setDefaults] = useState<RedactionDefaults>({ strength: 60 })
   const [format, setFormat] = useState<Format>('png')
   const [busy, setBusy] = useState<'copy' | 'save' | null>(null)
   const busyRef = useRef(false)
@@ -214,7 +214,7 @@ export default function ImageEditor() {
     return (
       <div className="flex h-full flex-col">
         <TitleBar>
-          <span className="text-[13px] font-medium text-neutral-400">Screenshot editor</span>
+          <span className="text-[13px] font-medium text-neutral-600">Screenshot editor</span>
         </TitleBar>
         <EmptyState
           icon={ImagePlus}
@@ -244,7 +244,7 @@ export default function ImageEditor() {
   const tools: { mode: StageMode; icon: typeof Crop; label: string; key: string }[] = [
     { mode: 'select', icon: MousePointer2, label: 'Select', key: 'V' },
     { mode: 'crop', icon: Crop, label: 'Crop', key: 'C' },
-    { mode: 'blur', icon: Droplets, label: 'Blur or pixelate an area', key: 'B' },
+    { mode: 'blur', icon: Droplets, label: 'Blur an area', key: 'B' },
   ]
 
   return (
@@ -284,7 +284,7 @@ export default function ImageEditor() {
         />
         <IconButton icon={ClipboardPaste} label="Paste image" onClick={pasteFromClipboard} />
         <div className="flex-1" />
-        <span className="mr-2 text-xs text-neutral-500 tabular-nums">
+        <span className="mr-2 text-xs text-neutral-600 tabular-nums">
           {layout.width} × {layout.height}
         </span>
         <Button icon={Copy} loading={busy === 'copy'} onClick={copy} title={`Copy (${modKey}C)`}>
@@ -302,7 +302,7 @@ export default function ImageEditor() {
       </TitleBar>
 
       <div className="flex min-h-0 flex-1">
-        <div className="flex min-w-0 flex-1 flex-col bg-neutral-950">
+        <div className="flex min-w-0 flex-1 flex-col bg-neutral-50">
           <Stage
             source={image}
             width={image.width}
@@ -319,7 +319,7 @@ export default function ImageEditor() {
           />
         </div>
 
-        <aside className="w-80 shrink-0 overflow-y-auto border-l border-neutral-800/80 bg-neutral-950">
+        <aside className="w-80 shrink-0 overflow-y-auto border-l border-neutral-100 bg-white">
           <StyleSections
             comp={comp}
             update={history.update}
@@ -343,7 +343,7 @@ export default function ImageEditor() {
                 { value: 'jpeg', label: 'JPEG' },
               ]}
             />
-            <p className="mt-2.5 text-xs leading-relaxed text-neutral-500">
+            <p className="mt-2.5 text-xs leading-relaxed text-neutral-600">
               PNG keeps text sharp. JPEG makes smaller files; X accepts images up to 5 MB.
             </p>
           </Section>

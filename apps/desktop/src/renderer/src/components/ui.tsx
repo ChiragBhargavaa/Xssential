@@ -6,16 +6,16 @@ import { cx, isMac } from '../lib/utils'
 
 type Variant = 'primary' | 'inverse' | 'secondary' | 'ghost' | 'danger'
 
-// X's pill buttons: blue for the main action, white for strong secondary actions,
+// X's pill buttons: blue for the main action, black for strong secondary actions,
 // outlined for the rest
 const variants: Record<Variant, string> = {
   primary:
     'bg-x-blue text-white hover:bg-x-blue-hover disabled:opacity-50 disabled:hover:bg-x-blue',
   inverse:
-    'bg-neutral-100 text-neutral-950 hover:bg-neutral-300 disabled:opacity-50 disabled:hover:bg-neutral-100',
+    'bg-neutral-900 text-white hover:bg-neutral-900/85 disabled:opacity-50 disabled:hover:bg-neutral-900',
   secondary:
-    'border border-neutral-600 text-neutral-100 hover:bg-neutral-100/10 disabled:text-neutral-500 disabled:hover:bg-transparent',
-  ghost: 'text-neutral-200 hover:bg-neutral-100/10 disabled:text-neutral-600',
+    'border border-neutral-300 text-neutral-900 hover:bg-neutral-100 disabled:text-neutral-600 disabled:hover:bg-transparent',
+  ghost: 'text-neutral-900 hover:bg-neutral-100 disabled:text-neutral-500',
   danger: 'border border-x-red/50 text-x-red hover:bg-x-red/10',
 }
 
@@ -83,7 +83,7 @@ export function IconButton({
         'inline-flex size-9 shrink-0 items-center justify-center rounded-full transition-colors disabled:cursor-not-allowed disabled:opacity-35 [-webkit-app-region:no-drag]',
         active
           ? 'bg-x-blue/15 text-x-blue'
-          : 'text-neutral-200 hover:bg-x-blue/10 hover:text-x-blue disabled:hover:bg-transparent disabled:hover:text-neutral-200',
+          : 'text-neutral-900 hover:bg-x-blue/10 hover:text-x-blue disabled:hover:bg-transparent disabled:hover:text-neutral-900',
         className,
       )}
       {...props}
@@ -105,9 +105,9 @@ export function Section({
   className?: string
 }) {
   return (
-    <section className={cx('border-b border-neutral-800 px-4 py-4', className)}>
+    <section className={cx('border-b border-neutral-100 px-4 py-4', className)}>
       <div className="mb-3 flex items-center justify-between gap-2">
-        <h3 className="text-[15px] font-extrabold text-neutral-200">{title}</h3>
+        <h3 className="text-[15px] font-extrabold text-neutral-900">{title}</h3>
         {action}
       </div>
       {children}
@@ -140,8 +140,8 @@ export function Slider({
   return (
     <label className={cx('block', disabled && 'opacity-40')}>
       <div className="mb-1.5 flex items-center justify-between text-[13px]">
-        <span className="text-neutral-200">{label}</span>
-        <span className="text-neutral-500 tabular-nums">
+        <span className="text-neutral-900">{label}</span>
+        <span className="text-neutral-600 tabular-nums">
           {Math.round(value * 100) / 100}
           {unit}
         </span>
@@ -175,17 +175,17 @@ export function Segmented<T extends string>({
   className?: string
 }) {
   return (
-    <div className={cx('flex rounded-full bg-neutral-900 p-1 ring-1 ring-neutral-800', className)}>
+    <div className={cx('flex rounded-full bg-neutral-50 p-1 ring-1 ring-neutral-200', className)}>
       {options.map((o) => (
         <button
           key={o.value}
           type="button"
           onClick={() => onChange(o.value)}
           className={cx(
-            'flex h-7 flex-1 items-center justify-center gap-1.5 rounded-full px-2 text-[13px] transition-colors',
+            'flex h-7 flex-1 items-center justify-center gap-1.5 rounded-full px-2 text-[13px] whitespace-nowrap transition-colors',
             o.value === value
-              ? 'bg-neutral-100 font-bold text-neutral-950'
-              : 'font-medium text-neutral-500 hover:text-neutral-200',
+              ? 'bg-neutral-900 font-bold text-white'
+              : 'font-medium text-neutral-600 hover:text-neutral-900',
           )}
         >
           {o.icon && <o.icon className="size-3.5" />}
@@ -217,9 +217,9 @@ export function Toggle({
       )}
     >
       <span className="min-w-0">
-        <span className="block text-sm text-neutral-200">{label}</span>
+        <span className="block text-sm text-neutral-900">{label}</span>
         {description && (
-          <span className="mt-0.5 block text-[13px] leading-snug text-neutral-500">
+          <span className="mt-0.5 block text-[13px] leading-snug text-neutral-600">
             {description}
           </span>
         )}
@@ -232,7 +232,7 @@ export function Toggle({
         onClick={() => onChange(!checked)}
         className={cx(
           'relative mt-0.5 inline-flex h-5 w-9 shrink-0 rounded-full transition-colors',
-          checked ? 'bg-x-blue' : 'bg-neutral-700',
+          checked ? 'bg-x-blue' : 'bg-neutral-300',
         )}
       >
         <span
@@ -248,7 +248,7 @@ export function Toggle({
 
 export function Kbd({ children }: { children: ReactNode }) {
   return (
-    <kbd className="inline-flex min-w-5 items-center justify-center rounded-md border border-neutral-700 bg-neutral-900 px-1 font-sans text-[11px] text-neutral-200">
+    <kbd className="inline-flex min-w-5 items-center justify-center rounded-md border border-neutral-300 bg-white px-1 font-sans text-[11px] text-neutral-900">
       {children}
     </kbd>
   )
@@ -259,7 +259,7 @@ export function TitleBar({ children, className }: { children?: ReactNode; classN
   return (
     <header
       className={cx(
-        'flex h-13 shrink-0 items-center gap-1 border-b border-neutral-800 bg-neutral-950/95 pr-3 backdrop-blur [-webkit-app-region:drag]',
+        'flex h-13 shrink-0 items-center gap-1 border-b border-neutral-100 bg-white/85 pr-3 backdrop-blur [-webkit-app-region:drag]',
         isMac ? 'pl-20' : 'pl-3',
         className,
       )}
@@ -269,11 +269,11 @@ export function TitleBar({ children, className }: { children?: ReactNode; classN
   )
 }
 
-export const ToolbarDivider = () => <div className="mx-1.5 h-5 w-px bg-neutral-800" />
+export const ToolbarDivider = () => <div className="mx-1.5 h-5 w-px bg-neutral-200" />
 
 export function ProgressBar({ value }: { value: number }) {
   return (
-    <div className="h-1.5 w-full overflow-hidden rounded-full bg-neutral-800">
+    <div className="h-1.5 w-full overflow-hidden rounded-full bg-neutral-100">
       <div
         className="h-full rounded-full bg-x-blue transition-[width] duration-200"
         style={{ width: `${Math.round(value * 100)}%` }}

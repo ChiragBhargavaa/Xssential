@@ -64,7 +64,7 @@ export function createAppWindow(opts: AppWindowOptions): BrowserWindow {
     minHeight: opts.minHeight,
     title: opts.title,
     show: false,
-    backgroundColor: '#000000',
+    backgroundColor: '#ffffff',
     autoHideMenuBar: true,
     titleBarStyle: isMac ? 'hiddenInset' : 'default',
     webPreferences: {

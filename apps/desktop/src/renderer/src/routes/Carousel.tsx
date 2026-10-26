@@ -80,7 +80,11 @@ function SlidePreview({
   }, [image, plan, format, index, style, width, height])
 
   return (
-    <canvas ref={ref} className="rounded-md shadow-xl shadow-black/40" style={{ width, height }} />
+    <canvas
+      ref={ref}
+      className="rounded-md shadow-lg shadow-neutral-900/15"
+      style={{ width, height }}
+    />
   )
 }
 
@@ -227,7 +231,7 @@ export default function Carousel() {
     return (
       <div className="flex h-full flex-col">
         <TitleBar>
-          <span className="text-[13px] font-medium text-neutral-400">Carousel</span>
+          <span className="text-[13px] font-medium text-neutral-600">Carousel</span>
         </TitleBar>
         <EmptyState
           icon={GalleryHorizontalEnd}
@@ -264,11 +268,11 @@ export default function Carousel() {
         />
         <IconButton icon={ClipboardPaste} label="Paste image" onClick={pasteFromClipboard} />
         <ToolbarDivider />
-        <span className="truncate text-[13px] text-neutral-400">
+        <span className="truncate text-[13px] text-neutral-600">
           {source.name} · {source.image.width} × {source.image.height}
         </span>
         <div className="flex-1" />
-        <span className="mr-2 text-xs text-neutral-500">
+        <span className="mr-2 text-xs text-neutral-600">
           {plan.slices.length} {plan.slices.length === 1 ? 'slide' : 'slides'} · {format.width} ×{' '}
           {format.height}
         </span>
@@ -280,16 +284,16 @@ export default function Carousel() {
       <div className="flex min-h-0 flex-1">
         <div
           ref={strip.ref}
-          className="flex min-w-0 flex-1 items-center overflow-x-auto bg-neutral-950"
+          className="flex min-w-0 flex-1 items-center overflow-x-auto bg-neutral-50"
         >
           <div className="flex items-start gap-10 px-10 py-6">
             {posts.map((post, p) => (
               <div key={p} className="shrink-0">
                 <div className="mb-3 flex items-baseline gap-2">
-                  <span className="text-[13px] font-medium text-neutral-200">
+                  <span className="text-[13px] font-medium text-neutral-900">
                     {posts.length > 1 ? `Post ${p + 1}` : 'Your post'}
                   </span>
-                  <span className="text-xs text-neutral-500">
+                  <span className="text-xs text-neutral-600">
                     {p === 0
                       ? `${post.length} ${post.length === 1 ? 'image' : 'images'}`
                       : 'Reply to the previous post to continue the thread'}
@@ -307,7 +311,7 @@ export default function Carousel() {
                         height={cardHeight}
                       />
                       <div className="mt-2 flex items-center justify-between">
-                        <span className="text-xs text-neutral-500">Slide {i + 1}</span>
+                        <span className="text-xs text-neutral-600">Slide {i + 1}</span>
                         <Button
                           size="sm"
                           variant="ghost"
@@ -326,14 +330,14 @@ export default function Carousel() {
           </div>
         </div>
 
-        <aside className="w-80 shrink-0 overflow-y-auto border-l border-neutral-800/80 bg-neutral-950">
+        <aside className="w-80 shrink-0 overflow-y-auto border-l border-neutral-100 bg-white">
           <Section title="Slide size">
             <FramePicker frames={CAROUSEL_FORMATS} value={format.id} onChange={setFormatId} />
           </Section>
           <Section title="Split">
             <div className="space-y-4">
               <div>
-                <div className="mb-1.5 text-xs text-neutral-300">Direction</div>
+                <div className="mb-1.5 text-xs text-neutral-800">Direction</div>
                 <Segmented
                   value={directionChoice}
                   onChange={setDirectionChoice}
@@ -345,7 +349,7 @@ export default function Carousel() {
                 />
               </div>
               <div>
-                <div className="mb-1.5 text-xs text-neutral-300">Slides</div>
+                <div className="mb-1.5 text-xs text-neutral-800">Slides</div>
                 <Segmented
                   value={count}
                   onChange={setCount}
@@ -356,7 +360,7 @@ export default function Carousel() {
                     { value: '4', label: '4' },
                   ]}
                 />
-                <p className="mt-2 text-xs leading-relaxed text-neutral-500">
+                <p className="mt-2 text-xs leading-relaxed text-neutral-600">
                   {count === 'auto'
                     ? 'Keeps the image as large as possible and adds slides as needed.'
                     : 'Shrinks the image so it fits in exactly this many slides.'}
@@ -387,7 +391,7 @@ export default function Carousel() {
                 onChange={setMatchBackground}
               />
               {!matchBackground && (
-                <label className="flex items-center justify-between text-xs text-neutral-300">
+                <label className="flex items-center justify-between text-xs text-neutral-800">
                   Background color
                   <input
                     type="color"
@@ -406,7 +410,7 @@ export default function Carousel() {
             </div>
           </Section>
           <div className="px-4 py-4">
-            <div className="flex gap-2.5 rounded-xl bg-neutral-900 p-3 text-xs leading-relaxed text-neutral-400 ring-1 ring-neutral-800">
+            <div className="flex gap-2.5 rounded-xl bg-neutral-50 p-3 text-xs leading-relaxed text-neutral-600 ring-1 ring-neutral-200">
               <Info className="mt-0.5 size-3.5 shrink-0 text-x-blue" />
               <p>
                 X shows up to {X_IMAGES_PER_POST} images per post as a swipeable carousel. Keep

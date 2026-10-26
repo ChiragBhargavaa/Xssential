@@ -33,8 +33,8 @@ function Step({
         {done ? <Check className="size-4" strokeWidth={3} /> : n}
       </span>
       <div className="min-w-0 flex-1">
-        <div className="text-[15px] font-bold text-neutral-200">{title}</div>
-        <div className="mt-0.5 text-sm leading-relaxed text-neutral-500">{children}</div>
+        <div className="text-[15px] font-bold text-neutral-900">{title}</div>
+        <div className="mt-0.5 text-sm leading-relaxed text-neutral-600">{children}</div>
         {action && <div className="mt-3">{action}</div>}
       </div>
     </li>
@@ -85,7 +85,7 @@ export default function Setup({ params }: RouteProps) {
   return (
     <div className="flex h-full flex-col">
       <TitleBar>
-        <span className="text-[15px] font-bold text-neutral-200">Permissions</span>
+        <span className="text-[15px] font-bold text-neutral-900">Permissions</span>
       </TitleBar>
 
       <main className="flex-1 overflow-y-auto">
@@ -100,7 +100,7 @@ export default function Setup({ params }: RouteProps) {
           <h1 className="mt-5 text-[23px] font-extrabold tracking-tight">
             {alreadyAllowed ? 'Screen recording is allowed' : 'Allow screen recording'}
           </h1>
-          <p className="mt-2 text-[15px] leading-relaxed text-neutral-500">
+          <p className="mt-2 text-[15px] leading-relaxed text-neutral-600">
             {alreadyAllowed
               ? `Xssential can ${goal}.`
               : `To ${goal}, macOS needs you to allow Xssential to record the screen. Xssential only looks at your screen while you use a tool.`}
@@ -126,17 +126,17 @@ export default function Setup({ params }: RouteProps) {
           ) : (
             <>
               {dev && (
-                <div className="mt-6 flex gap-3 rounded-2xl border border-x-yellow/30 bg-x-yellow/10 p-4 text-sm leading-relaxed text-neutral-200">
-                  <Terminal className="mt-0.5 size-4 shrink-0 text-x-yellow" />
+                <div className="mt-6 flex gap-3 rounded-2xl border border-x-yellow/30 bg-x-yellow/10 p-4 text-sm leading-relaxed text-neutral-900">
+                  <Terminal className="mt-0.5 size-4 shrink-0 text-x-orange" />
                   <p>
                     This is a development build, so macOS gives the permission to the terminal app
-                    that runs <code className="text-x-yellow">pnpm dev:desktop</code>. Switch that
-                    app on, then stop and start the dev command again.
+                    that runs <code className="font-bold">pnpm dev:desktop</code>. Switch that app
+                    on, then stop and start the dev command again.
                   </p>
                 </div>
               )}
 
-              <ol className="mt-6 divide-y divide-neutral-800 rounded-2xl border border-neutral-800">
+              <ol className="mt-6 divide-y divide-neutral-100 rounded-2xl border border-neutral-100">
                 <Step
                   n={1}
                   title="Open System Settings"
@@ -170,7 +170,7 @@ export default function Setup({ params }: RouteProps) {
                     }
                   >
                     macOS applies the permission after a restart. Click{' '}
-                    <span className="text-neutral-200">Quit & Reopen</span> if macOS asks, or use
+                    <span className="text-neutral-900">Quit & Reopen</span> if macOS asks, or use
                     the button.{' '}
                     {tool
                       ? `Xssential reopens and goes straight to ${tool.label}.`
@@ -183,7 +183,7 @@ export default function Setup({ params }: RouteProps) {
                 role="status"
                 className={cx(
                   'mt-4 flex items-center gap-2.5 rounded-full px-4 py-2.5 text-sm font-bold',
-                  restarting ? 'bg-x-green/15 text-x-green' : 'bg-neutral-900 text-neutral-400',
+                  restarting ? 'bg-x-green/15 text-x-green' : 'bg-neutral-50 text-neutral-600',
                 )}
               >
                 {restarting ? (
@@ -200,7 +200,7 @@ export default function Setup({ params }: RouteProps) {
               </div>
 
               {toolId && (
-                <p className="mt-6 text-center text-[13px] text-neutral-500">
+                <p className="mt-6 text-center text-[13px] text-neutral-600">
                   Already switched on and restarted?{' '}
                   <button
                     type="button"

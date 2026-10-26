@@ -32,7 +32,7 @@ function Shortcut({ accelerator, large }: { accelerator: string; large?: boolean
         large ? (
           <kbd
             key={i}
-            className="inline-flex min-w-9 items-center justify-center rounded-lg border border-neutral-700 bg-neutral-900 px-2 py-1 font-sans text-base font-bold text-neutral-100 shadow-[0_2px_0_0_#2f3336]"
+            className="inline-flex min-w-9 items-center justify-center rounded-lg border border-neutral-300 bg-white px-2 py-1 font-sans text-base font-bold text-neutral-900 shadow-[0_2px_0_0_#cfd9de]"
           >
             {k}
           </kbd>
@@ -81,7 +81,7 @@ function ShortcutRecorder({
         'flex h-9 min-w-40 items-center justify-center rounded-full px-4 text-sm font-bold ring-1 transition-colors',
         listening
           ? 'bg-x-blue/10 text-x-blue ring-x-blue'
-          : 'text-neutral-200 ring-neutral-600 hover:bg-neutral-100/10',
+          : 'text-neutral-900 ring-neutral-300 hover:bg-neutral-100',
       )}
     >
       {listening ? 'Press the new shortcut…' : <Shortcut accelerator={value} />}
@@ -118,7 +118,7 @@ export default function Home() {
   return (
     <div className="flex h-full flex-col">
       <TitleBar>
-        <span className="text-[15px] font-bold text-neutral-200">Xssential</span>
+        <span className="text-[15px] font-bold text-neutral-900">Xssential</span>
       </TitleBar>
 
       <main className="flex-1 overflow-y-auto">
@@ -129,7 +129,7 @@ export default function Home() {
             </div>
             <div>
               <h1 className="text-[23px] font-extrabold tracking-tight">Xssential</h1>
-              <p className="mt-0.5 text-[15px] text-neutral-500">
+              <p className="mt-0.5 text-[15px] text-neutral-600">
                 Screenshots, screen recordings and carousels, ready for X.
               </p>
             </div>
@@ -139,10 +139,10 @@ export default function Home() {
             <div className="mt-8 flex items-center gap-4 rounded-2xl border border-x-yellow/30 bg-x-yellow/10 px-5 py-4">
               <ShieldAlert className="size-5 shrink-0 text-x-yellow" />
               <div className="min-w-0 flex-1">
-                <div className="text-[15px] font-bold text-neutral-200">
+                <div className="text-[15px] font-bold text-neutral-900">
                   Screen recording is off
                 </div>
-                <div className="mt-0.5 text-sm text-neutral-400">
+                <div className="mt-0.5 text-sm text-neutral-600">
                   Screenshots and recordings need macOS's permission. It takes a minute to set up.
                 </div>
               </div>
@@ -153,16 +153,16 @@ export default function Home() {
           )}
 
           {settings && (
-            <div className="mt-4 flex flex-wrap items-center gap-3 rounded-2xl border border-neutral-800 px-5 py-4">
-              <span className="text-[15px] text-neutral-200">Press</span>
+            <div className="mt-4 flex flex-wrap items-center gap-3 rounded-2xl border border-neutral-100 px-5 py-4">
+              <span className="text-[15px] text-neutral-900">Press</span>
               <Shortcut accelerator={settings.shortcut} large />
-              <span className="text-[15px] text-neutral-200">
+              <span className="text-[15px] text-neutral-900">
                 anywhere to open the tool wheel. Xssential stays in the {trayPlace}.
               </span>
             </div>
           )}
 
-          <h2 className="mt-10 mb-3 text-xl font-extrabold text-neutral-200">Tools</h2>
+          <h2 className="mt-10 mb-3 text-xl font-extrabold text-neutral-900">Tools</h2>
           <div className="grid grid-cols-2 gap-3 sm:grid-cols-3">
             {tools.map((tool) => {
               const Icon = toolIcons[tool.id]!
@@ -171,13 +171,13 @@ export default function Home() {
                   key={tool.id}
                   type="button"
                   onClick={() => window.api.tools.launch(tool.id)}
-                  className="group rounded-2xl border border-neutral-800 p-4 text-left transition-colors hover:bg-neutral-900"
+                  className="group rounded-2xl border border-neutral-100 p-4 text-left transition-colors hover:bg-neutral-50"
                 >
                   <span className="flex size-10 items-center justify-center rounded-full bg-x-blue/10 transition-colors group-hover:bg-x-blue/20">
                     <Icon className="size-5 text-x-blue" />
                   </span>
-                  <div className="mt-3 text-[15px] font-bold text-neutral-200">{tool.label}</div>
-                  <div className="mt-1 text-[13px] leading-relaxed text-neutral-500">
+                  <div className="mt-3 text-[15px] font-bold text-neutral-900">{tool.label}</div>
+                  <div className="mt-1 text-[13px] leading-relaxed text-neutral-600">
                     {tool.hint}
                   </div>
                 </button>
@@ -185,14 +185,14 @@ export default function Home() {
             })}
           </div>
 
-          <h2 className="mt-10 mb-3 text-xl font-extrabold text-neutral-200">Settings</h2>
-          <div className="divide-y divide-neutral-800 rounded-2xl border border-neutral-800">
+          <h2 className="mt-10 mb-3 text-xl font-extrabold text-neutral-900">Settings</h2>
+          <div className="divide-y divide-neutral-100 rounded-2xl border border-neutral-100">
             <div className="flex items-center justify-between gap-4 px-5 py-4">
               <div className="flex items-start gap-3">
-                <Keyboard className="mt-0.5 size-4 text-neutral-500" />
+                <Keyboard className="mt-0.5 size-4 text-neutral-600" />
                 <div>
-                  <div className="text-[15px] font-bold text-neutral-200">Tool wheel shortcut</div>
-                  <div className="mt-0.5 text-[13px] text-neutral-500">
+                  <div className="text-[15px] font-bold text-neutral-900">Tool wheel shortcut</div>
+                  <div className="mt-0.5 text-[13px] text-neutral-600">
                     Works in every app. Press it again to close the wheel, or to stop a recording.
                   </div>
                   {settings && !settings.shortcutActive && (
@@ -229,10 +229,10 @@ export default function Home() {
                     <ShieldAlert className="mt-0.5 size-4 text-x-yellow" />
                   )}
                   <div>
-                    <div className="text-[15px] font-bold text-neutral-200">
+                    <div className="text-[15px] font-bold text-neutral-900">
                       Screen recording permission
                     </div>
-                    <div className="mt-0.5 text-[13px] text-neutral-500">
+                    <div className="mt-0.5 text-[13px] text-neutral-600">
                       {access === 'granted'
                         ? 'Allowed. Screenshots and recordings are ready to go.'
                         : 'Needed for screenshots and recordings. Xssential walks you through it and restarts itself when it is on.'}
@@ -252,7 +252,7 @@ export default function Home() {
             )}
           </div>
 
-          <p className="mt-8 text-center text-[13px] text-neutral-500">
+          <p className="mt-8 text-center text-[13px] text-neutral-600">
             Xssential {version} · Free and open source (MIT)
           </p>
         </div>

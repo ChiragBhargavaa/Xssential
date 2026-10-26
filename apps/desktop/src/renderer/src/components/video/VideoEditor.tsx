@@ -107,7 +107,7 @@ export function VideoEditor({
 
   const [mode, setMode] = useState<StageMode>('select')
   const [selectedId, setSelectedId] = useState<string | null>(null)
-  const [defaults, setDefaults] = useState<RedactionDefaults>({ style: 'pixelate', strength: 60 })
+  const [defaults, setDefaults] = useState<RedactionDefaults>({ strength: 60 })
 
   const videoRef = useRef<HTMLVideoElement>(null)
   const musicRef = useRef<HTMLAudioElement>(null)
@@ -320,7 +320,7 @@ export function VideoEditor({
   const tools: { mode: StageMode; icon: typeof Crop; label: string; key: string }[] = [
     { mode: 'select', icon: MousePointer2, label: 'Select', key: 'V' },
     { mode: 'crop', icon: Crop, label: 'Crop', key: 'C' },
-    { mode: 'blur', icon: Droplets, label: 'Blur or pixelate an area', key: 'B' },
+    { mode: 'blur', icon: Droplets, label: 'Blur an area', key: 'B' },
   ]
 
   return (
@@ -355,7 +355,7 @@ export function VideoEditor({
         <IconButton icon={CircleDot} label="New recording" onClick={onNewRecording} />
         <IconButton icon={FileVideo} label="Open another video" onClick={onOpenVideo} />
         <div className="flex-1" />
-        <span className="mr-2 text-xs text-neutral-500 tabular-nums">
+        <span className="mr-2 text-xs text-neutral-600 tabular-nums">
           {layout.width} × {layout.height} · {fps} fps · MP4
         </span>
         <Button variant="primary" icon={Upload} onClick={exportMp4} title={`Export (${modKey}S)`}>
@@ -364,7 +364,7 @@ export function VideoEditor({
       </TitleBar>
 
       <div className="flex min-h-0 flex-1">
-        <div className="flex min-w-0 flex-1 flex-col bg-neutral-950">
+        <div className="flex min-w-0 flex-1 flex-col bg-neutral-50">
           <Stage
             handle={stageRef}
             source={ready ? videoRef.current : null}
@@ -396,7 +396,7 @@ export function VideoEditor({
           />
         </div>
 
-        <aside className="w-80 shrink-0 overflow-y-auto border-l border-neutral-800/80 bg-neutral-950">
+        <aside className="w-80 shrink-0 overflow-y-auto border-l border-neutral-100 bg-white">
           <StyleSections
             comp={doc.comp}
             update={updateComp}
@@ -447,7 +447,7 @@ export function VideoEditor({
             />
           </Section>
           <Section title="Export">
-            <div className="mb-1.5 text-xs text-neutral-300">Frame rate</div>
+            <div className="mb-1.5 text-xs text-neutral-800">Frame rate</div>
             <Segmented
               value={fps}
               onChange={setFps}
@@ -456,7 +456,7 @@ export function VideoEditor({
                 { value: '60', label: '60 fps' },
               ]}
             />
-            <p className="mt-2.5 text-xs leading-relaxed text-neutral-500">
+            <p className="mt-2.5 text-xs leading-relaxed text-neutral-600">
               MP4 with H.264 video and AAC audio, the format X recommends. Up to 1080p.
             </p>
           </Section>
@@ -491,10 +491,10 @@ export function VideoEditor({
       {music && <audio ref={musicRef} src={music.url} loop preload="auto" />}
 
       {exporting && (
-        <div className="fade-in fixed inset-0 z-40 flex items-center justify-center bg-[#5b7083]/40">
-          <div className="w-96 rounded-2xl bg-neutral-950 p-6 shadow-[0_0_15px_rgba(255,255,255,0.2)]">
+        <div className="fade-in fixed inset-0 z-40 flex items-center justify-center bg-black/40">
+          <div className="w-96 rounded-2xl bg-white p-6 shadow-xl">
             <h3 className="text-xl font-extrabold">Exporting video</h3>
-            <p className="mt-1 text-xs text-neutral-400">
+            <p className="mt-1 text-xs text-neutral-600">
               {layout.width} × {layout.height} · {fps} fps · {Math.round(exporting.progress * 100)}%
             </p>
             <div className="mt-4">

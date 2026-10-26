@@ -22,7 +22,6 @@ import {
   type FramePreset,
   type LayoutLimits,
   type Rect,
-  type RedactStyle,
 } from '../lib/composition'
 import { useElementSize, useKeydown, type HistoryMode } from '../lib/hooks'
 import { cx, fitSize, uid } from '../lib/utils'
@@ -53,7 +52,7 @@ interface StageProps {
   // Video only: the current time, and the fill shown for a transparent background
   time?: number
   opaque?: string
-  newRedaction: { style: RedactStyle; strength: number; start?: number; end?: number }
+  newRedaction: { strength: number; start?: number; end?: number }
 }
 
 const RAW: Pick<Composition, 'crop' | 'frame' | 'padding' | 'radius' | 'shadow' | 'background'> = {
@@ -227,7 +226,7 @@ export function Stage(props: StageProps) {
         <canvas
           ref={canvasRef}
           className={cx(
-            'absolute inset-0 shadow-[0_0_0_1px_#2f3336]',
+            'absolute inset-0 shadow-[0_0_0_1px_#e1e8ed]',
             transparent && 'checkerboard',
           )}
           style={{ width: display.width, height: display.height }}
@@ -266,7 +265,7 @@ export function Stage(props: StageProps) {
                       onChange={(css, phase) => moveRedaction(r.id, css, phase)}
                     >
                       {!isRedactionActive(r, props.time) && (
-                        <div className="pointer-events-none absolute inset-0 bg-neutral-950/40" />
+                        <div className="pointer-events-none absolute inset-0 bg-white/50" />
                       )}
                     </RectEditor>
                   ))}
@@ -277,7 +276,7 @@ export function Stage(props: StageProps) {
       </div>
 
       {cropping && (
-        <div className="absolute bottom-5 left-1/2 flex -translate-x-1/2 items-center gap-2 rounded-xl border border-neutral-800 bg-neutral-900/95 p-1.5 shadow-2xl">
+        <div className="absolute bottom-5 left-1/2 flex -translate-x-1/2 items-center gap-2 rounded-xl bg-white/95 p-1.5 shadow-[0_0_15px_rgba(101,119,134,0.2),0_0_3px_1px_rgba(101,119,134,0.15)]">
           {frameAspect && (
             <Segmented
               className="w-52"
@@ -292,7 +291,7 @@ export function Stage(props: StageProps) {
               ]}
             />
           )}
-          <span className="px-2 text-xs whitespace-nowrap text-neutral-400 tabular-nums">
+          <span className="px-2 text-xs whitespace-nowrap text-neutral-600 tabular-nums">
             {Math.round(cropDraft.w)} × {Math.round(cropDraft.h)}
           </span>
           <Button

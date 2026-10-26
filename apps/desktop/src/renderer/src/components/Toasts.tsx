@@ -13,7 +13,7 @@ const icons: Record<ToastTone, typeof Info> = {
 const tones: Record<ToastTone, string> = {
   info: 'bg-x-blue text-white',
   success: 'bg-x-blue text-white',
-  warning: 'bg-x-yellow text-neutral-950',
+  warning: 'bg-x-yellow text-neutral-900',
   error: 'bg-x-red text-white',
 }
 
@@ -28,7 +28,7 @@ export function Toasts() {
             key={t.id}
             role="status"
             className={cx(
-              'toast-in pointer-events-auto flex items-start gap-2.5 rounded-xl px-4 py-3 text-sm font-medium shadow-[0_0_15px_rgba(255,255,255,0.15)]',
+              'toast-in pointer-events-auto flex items-start gap-2.5 rounded-xl px-4 py-3 text-sm font-medium shadow-[0_0_15px_rgba(101,119,134,0.2),0_0_3px_1px_rgba(101,119,134,0.15)]',
               tones[t.tone],
             )}
           >

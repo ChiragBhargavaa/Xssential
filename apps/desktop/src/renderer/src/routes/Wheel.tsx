@@ -114,21 +114,21 @@ export default function Wheel() {
     >
       <svg
         viewBox={`0 0 ${SIZE} ${SIZE}`}
-        className="absolute inset-0 size-full drop-shadow-[0_0_14px_rgba(255,255,255,0.18)]"
+        className="absolute inset-0 size-full drop-shadow-[0_0_14px_rgba(101,119,134,0.35)]"
       >
-        {/* A dark plate behind the slices, so the gaps read as thin lines */}
-        <circle cx={C} cy={C} r={OUTER + 5} fill="#000" stroke="#2f3336" />
+        {/* A grey plate behind the slices, so the gaps read as thin lines */}
+        <circle cx={C} cy={C} r={OUTER + 5} fill="#eff3f4" stroke="#cfd9de" />
         {TOOLS.map((tool, i) => (
           <path
             key={tool.id}
             d={sectorPath(i)}
-            fill={active === i ? '#1d9bf0' : '#16181c'}
-            stroke={active === i ? '#1d9bf0' : '#2f3336'}
+            fill={active === i ? '#1d9bf0' : '#ffffff'}
+            stroke={active === i ? '#1d9bf0' : '#eff3f4'}
             strokeWidth={1}
             className="transition-[fill] duration-75"
           />
         ))}
-        <circle cx={C} cy={C} r={INNER - 7} fill="#000" stroke="#2f3336" />
+        <circle cx={C} cy={C} r={INNER - 7} fill="#ffffff" stroke="#eff3f4" />
       </svg>
 
       {TOOLS.map((tool, i) => {
@@ -139,7 +139,7 @@ export default function Wheel() {
             key={tool.id}
             className={cx(
               'pointer-events-none absolute flex -translate-x-1/2 -translate-y-1/2 flex-col items-center gap-1 transition-transform duration-100',
-              active === i ? 'scale-110 text-white' : 'text-neutral-200',
+              active === i ? 'scale-110 text-white' : 'text-neutral-900',
             )}
             style={{ left: `${(p.x / SIZE) * 100}%`, top: `${(p.y / SIZE) * 100}%` }}
           >
@@ -153,11 +153,11 @@ export default function Wheel() {
 
       <div className="pointer-events-none absolute top-1/2 left-1/2 flex w-24 -translate-x-1/2 -translate-y-1/2 flex-col items-center text-center">
         {hovered ? (
-          <span className="text-[11px] leading-tight text-neutral-400">{hovered.hint}</span>
+          <span className="text-[11px] leading-tight text-neutral-600">{hovered.hint}</span>
         ) : (
           <>
             <span className="text-2xl font-black text-x-blue">X</span>
-            <span className="text-[10px] leading-tight text-neutral-500">
+            <span className="text-[10px] leading-tight text-neutral-600">
               keys 1–6
               <br />
               esc to close

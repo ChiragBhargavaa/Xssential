@@ -181,7 +181,7 @@ export default function CaptureOverlay() {
       )}
 
       {size && (
-        <div className="pointer-events-none absolute top-6 left-1/2 -translate-x-1/2 rounded-full bg-black/90 px-4 py-2 text-sm text-neutral-200 shadow-[0_0_15px_rgba(255,255,255,0.2)]">
+        <div className="pointer-events-none absolute top-6 left-1/2 -translate-x-1/2 rounded-full bg-black/90 px-4 py-2 text-sm text-white shadow-[0_0_15px_rgba(255,255,255,0.2)]">
           Drag to capture · <b className="font-bold">Enter</b> for the full screen ·{' '}
           <b className="font-bold">Esc</b> to cancel
         </div>
@@ -199,7 +199,7 @@ export default function CaptureOverlay() {
             className="rounded-full shadow-2xl ring-2 ring-white/80"
             style={{ width: LOUPE, height: LOUPE }}
           />
-          <span className="rounded-full bg-black/90 px-2.5 py-0.5 text-xs font-bold text-neutral-200 tabular-nums">
+          <span className="rounded-full bg-black/90 px-2.5 py-0.5 text-xs font-bold text-white tabular-nums">
             {label}
           </span>
         </div>

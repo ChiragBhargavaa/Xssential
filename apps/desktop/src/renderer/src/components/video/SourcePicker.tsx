@@ -31,7 +31,7 @@ function SourceCard({
         'group flex flex-col gap-2 rounded-xl p-2 text-left ring-1 transition-colors',
         selected
           ? 'bg-x-blue/10 ring-x-blue'
-          : 'bg-neutral-900/60 ring-neutral-800 hover:ring-neutral-600',
+          : 'bg-neutral-50 ring-neutral-200 hover:ring-neutral-300',
       )}
     >
       <div className="flex aspect-video w-full items-center justify-center overflow-hidden rounded-lg bg-black">
@@ -46,11 +46,11 @@ function SourceCard({
         {source.icon ? (
           <img src={source.icon} alt="" className="size-4 shrink-0" />
         ) : source.kind === 'screen' ? (
-          <Monitor className="size-4 shrink-0 text-neutral-400" />
+          <Monitor className="size-4 shrink-0 text-neutral-600" />
         ) : (
-          <AppWindow className="size-4 shrink-0 text-neutral-400" />
+          <AppWindow className="size-4 shrink-0 text-neutral-600" />
         )}
-        <span className="truncate text-xs text-neutral-200">{source.name}</span>
+        <span className="truncate text-xs text-neutral-900">{source.name}</span>
       </div>
     </button>
   )
@@ -91,7 +91,7 @@ export function SourcePicker({ onStart }: { onStart: (options: RecordOptions) =>
           <div className="flex items-end justify-between">
             <div>
               <h2 className="text-xl font-extrabold tracking-tight">What do you want to record?</h2>
-              <p className="mt-1 text-sm text-neutral-400">
+              <p className="mt-1 text-sm text-neutral-600">
                 Pick a screen or a window. You can crop to any area afterwards.
               </p>
             </div>
@@ -101,16 +101,16 @@ export function SourcePicker({ onStart }: { onStart: (options: RecordOptions) =>
           </div>
 
           {sources === null ? (
-            <p className="mt-10 text-sm text-neutral-500">Looking for screens and windows…</p>
+            <p className="mt-10 text-sm text-neutral-600">Looking for screens and windows…</p>
           ) : needsPermission ? (
-            <div className="mt-8 flex flex-col items-center rounded-2xl border border-neutral-800 px-6 py-10 text-center">
+            <div className="mt-8 flex flex-col items-center rounded-2xl border border-neutral-100 px-6 py-10 text-center">
               <span className="flex size-12 items-center justify-center rounded-full bg-x-blue/15">
                 <MonitorUp className="size-6 text-x-blue" />
               </span>
-              <div className="mt-4 text-[17px] font-extrabold text-neutral-200">
+              <div className="mt-4 text-[17px] font-extrabold text-neutral-900">
                 Allow screen recording first
               </div>
-              <p className="mt-1 max-w-sm text-sm text-neutral-500">
+              <p className="mt-1 max-w-sm text-sm text-neutral-600">
                 macOS has to allow Xssential to see your screen. It takes a minute, and Xssential
                 comes back here on its own afterwards.
               </p>
@@ -123,12 +123,12 @@ export function SourcePicker({ onStart }: { onStart: (options: RecordOptions) =>
               </Button>
             </div>
           ) : sources.length === 0 ? (
-            <p className="mt-10 text-sm text-neutral-500">
+            <p className="mt-10 text-sm text-neutral-600">
               No screens are available right now. Try Refresh.
             </p>
           ) : (
             <>
-              <h3 className="mt-6 mb-2.5 text-[15px] font-extrabold text-neutral-200">Screens</h3>
+              <h3 className="mt-6 mb-2.5 text-[15px] font-extrabold text-neutral-900">Screens</h3>
               <div className="grid grid-cols-2 gap-3 lg:grid-cols-3">
                 {screens.map((s) => (
                   <SourceCard
@@ -142,7 +142,7 @@ export function SourcePicker({ onStart }: { onStart: (options: RecordOptions) =>
               </div>
               {windows.length > 0 && (
                 <>
-                  <h3 className="mt-8 mb-2.5 text-[15px] font-extrabold text-neutral-200">
+                  <h3 className="mt-8 mb-2.5 text-[15px] font-extrabold text-neutral-900">
                     Windows
                   </h3>
                   <div className="grid grid-cols-3 gap-3 lg:grid-cols-4">
@@ -163,10 +163,10 @@ export function SourcePicker({ onStart }: { onStart: (options: RecordOptions) =>
         </div>
       </div>
 
-      <footer className="flex shrink-0 items-center justify-between gap-6 border-t border-neutral-800 bg-neutral-950 px-8 py-3.5">
+      <footer className="flex shrink-0 items-center justify-between gap-6 border-t border-neutral-100 bg-white px-8 py-3.5">
         <div className="flex items-center gap-6">
           <div className="flex items-center gap-2.5">
-            <span className="text-xs text-neutral-400">Frame rate</span>
+            <span className="text-xs text-neutral-600">Frame rate</span>
             <Segmented
               className="w-32"
               value={fps}

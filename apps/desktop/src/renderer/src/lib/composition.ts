@@ -9,13 +9,10 @@ export interface Rect {
   h: number
 }
 
-export type RedactStyle = 'blur' | 'pixelate'
-
 export interface Redaction {
   id: string
   // In source pixels, so it stays put when the crop changes
   rect: Rect
-  style: RedactStyle
   strength: number
   // Optional time range in seconds (video only); the whole clip when unset
   start?: number
@@ -248,19 +245,6 @@ function drawRedaction(
   // Strength is relative to the image size so previews and exports look the same
   const unit = (Math.max(content.w, content.h) / 100) * k
   const strength = Math.max(1, redaction.strength)
-
-  if (redaction.style === 'pixelate') {
-    const block = Math.max(2, (unit * strength) / 30)
-    const cols = Math.max(1, Math.round(dw / block))
-    const rows = Math.max(1, Math.round(dh / block))
-    const tmp = scratchContext(cols, rows)
-    tmp.ctx.imageSmoothingEnabled = true
-    tmp.ctx.drawImage(source, sx0, sy0, sw, sh, 0, 0, cols, rows)
-    ctx.imageSmoothingEnabled = false
-    ctx.drawImage(tmp.canvas, 0, 0, cols, rows, dx, dy, dw, dh)
-    ctx.imageSmoothingEnabled = true
-    return
-  }
 
   const radius = Math.max(1, (unit * strength) / 25)
   ctx.save()

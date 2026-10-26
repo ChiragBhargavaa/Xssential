@@ -1,6 +1,6 @@
 @import 'tailwindcss';
 
-/* X's dark ("Lights out") palette. The neutral scale is replaced with X's greys so every
+/* X's light ("Default") palette. The neutral scale is replaced with X's greys so every
    neutral-* class follows it, and the x-* colors are X's accents. */
 @theme {
   --font-sans:
@@ -9,14 +9,14 @@
 
   --color-neutral-50: #f7f9f9;
   --color-neutral-100: #eff3f4;
-  --color-neutral-200: #e7e9ea;
-  --color-neutral-300: #d6d9db;
-  --color-neutral-400: #8b98a5;
-  --color-neutral-500: #71767b;
+  --color-neutral-200: #e1e8ed;
+  --color-neutral-300: #cfd9de;
+  --color-neutral-400: #aab8c2;
+  --color-neutral-500: #8b98a5;
   --color-neutral-600: #536471;
   --color-neutral-700: #3e4144;
   --color-neutral-800: #2f3336;
-  --color-neutral-900: #16181c;
+  --color-neutral-900: #0f1419;
   --color-neutral-950: #000000;
 
   --color-x-blue: #1d9bf0;
@@ -30,7 +30,7 @@
 }
 
 :root {
-  color-scheme: dark;
+  color-scheme: light;
 }
 
 html,
@@ -40,14 +40,14 @@ body {
   font-family: var(--font-sans);
   font-size: 15px;
   -webkit-font-smoothing: antialiased;
-  background: #000;
-  color: #e7e9ea;
+  background: #fff;
+  color: #0f1419;
   overflow: hidden;
   user-select: none;
 }
 
 ::selection {
-  background: rgb(29 155 240 / 0.4);
+  background: rgb(29 155 240 / 0.25);
 }
 
 #root {
@@ -72,7 +72,7 @@ textarea {
   height: 10px;
 }
 ::-webkit-scrollbar-thumb {
-  background: #3e4144;
+  background: #cfd9de;
   border-radius: 999px;
   border: 3px solid transparent;
   background-clip: content-box;
@@ -82,12 +82,12 @@ textarea {
 }
 
 .checkerboard {
-  background-color: #16181c;
+  background-color: #fff;
   background-image:
-    linear-gradient(45deg, #2f3336 25%, transparent 25%),
-    linear-gradient(-45deg, #2f3336 25%, transparent 25%),
-    linear-gradient(45deg, transparent 75%, #2f3336 75%),
-    linear-gradient(-45deg, transparent 75%, #2f3336 75%);
+    linear-gradient(45deg, #eff3f4 25%, transparent 25%),
+    linear-gradient(-45deg, #eff3f4 25%, transparent 25%),
+    linear-gradient(45deg, transparent 75%, #eff3f4 75%),
+    linear-gradient(-45deg, transparent 75%, #eff3f4 75%);
   background-size: 12px 12px;
   background-position:
     0 0,
@@ -106,7 +106,7 @@ textarea {
 .slider::-webkit-slider-runnable-track {
   height: 4px;
   border-radius: 999px;
-  background: linear-gradient(to right, #1d9bf0 var(--fill, 0%), #2f3336 var(--fill, 0%));
+  background: linear-gradient(to right, #1d9bf0 var(--fill, 0%), #cfd9de var(--fill, 0%));
 }
 .slider::-webkit-slider-thumb {
   appearance: none;
@@ -116,14 +116,14 @@ textarea {
   border-radius: 999px;
   background: #1d9bf0;
   box-shadow:
-    0 0 0 3px #000,
+    0 0 0 3px #fff,
     0 0 0 4px rgb(29 155 240 / 0.35);
   transition: box-shadow 120ms;
 }
 .slider:hover::-webkit-slider-thumb,
 .slider:active::-webkit-slider-thumb {
   box-shadow:
-    0 0 0 3px #000,
+    0 0 0 3px #fff,
     0 0 0 9px rgb(29 155 240 / 0.2);
 }
 .slider:disabled {
