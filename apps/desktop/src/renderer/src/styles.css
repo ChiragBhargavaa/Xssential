@@ -20,7 +20,6 @@
   --color-neutral-950: #000000;
 
   --color-x-blue: #1d9bf0;
-  --color-x-blue-hover: #1a8cd8;
   --color-x-red: #f4212e;
   --color-x-green: #00ba7c;
   --color-x-yellow: #ffd400;
@@ -106,7 +105,7 @@ textarea {
 .slider::-webkit-slider-runnable-track {
   height: 4px;
   border-radius: 999px;
-  background: linear-gradient(to right, #1d9bf0 var(--fill, 0%), #cfd9de var(--fill, 0%));
+  background: linear-gradient(to right, #0f1419 var(--fill, 0%), #cfd9de var(--fill, 0%));
 }
 .slider::-webkit-slider-thumb {
   appearance: none;
@@ -114,17 +113,17 @@ textarea {
   height: 16px;
   margin-top: -6px;
   border-radius: 999px;
-  background: #1d9bf0;
+  background: #0f1419;
   box-shadow:
     0 0 0 3px #fff,
-    0 0 0 4px rgb(29 155 240 / 0.35);
+    0 0 0 4px rgb(15 20 25 / 0.15);
   transition: box-shadow 120ms;
 }
 .slider:hover::-webkit-slider-thumb,
 .slider:active::-webkit-slider-thumb {
   box-shadow:
     0 0 0 3px #fff,
-    0 0 0 9px rgb(29 155 240 / 0.2);
+    0 0 0 9px rgb(15 20 25 / 0.1);
 }
 .slider:disabled {
   cursor: not-allowed;

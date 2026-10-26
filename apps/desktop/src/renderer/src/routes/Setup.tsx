@@ -27,7 +27,7 @@ function Step({
       <span
         className={cx(
           'flex size-7 shrink-0 items-center justify-center rounded-full text-[13px] font-bold',
-          done ? 'bg-x-green text-white' : 'bg-x-blue/15 text-x-blue',
+          done ? 'bg-x-green text-white' : 'bg-neutral-100 text-neutral-900',
         )}
       >
         {done ? <Check className="size-4" strokeWidth={3} /> : n}
@@ -90,11 +90,11 @@ export default function Setup({ params }: RouteProps) {
 
       <main className="flex-1 overflow-y-auto">
         <div className="mx-auto max-w-md px-6 py-8">
-          <div className="flex size-14 items-center justify-center rounded-full bg-x-blue/15">
+          <div className="flex size-14 items-center justify-center rounded-full bg-neutral-100">
             {alreadyAllowed || restarting ? (
-              <ShieldCheck className="size-7 text-x-blue" />
+              <ShieldCheck className="size-7 text-neutral-900" />
             ) : (
-              <MonitorUp className="size-7 text-x-blue" />
+              <MonitorUp className="size-7 text-neutral-900" />
             )}
           </div>
           <h1 className="mt-5 text-[23px] font-extrabold tracking-tight">
@@ -161,7 +161,7 @@ export default function Setup({ params }: RouteProps) {
                     done={restarting}
                     action={
                       <Button
-                        variant="inverse"
+                        variant="secondary"
                         icon={RotateCw}
                         onClick={() => window.api.permissions.restart()}
                       >

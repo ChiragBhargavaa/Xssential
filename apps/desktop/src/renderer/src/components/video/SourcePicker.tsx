@@ -30,7 +30,7 @@ function SourceCard({
       className={cx(
         'group flex flex-col gap-2 rounded-xl p-2 text-left ring-1 transition-colors',
         selected
-          ? 'bg-x-blue/10 ring-x-blue'
+          ? 'bg-neutral-100 ring-2 ring-neutral-900'
           : 'bg-neutral-50 ring-neutral-200 hover:ring-neutral-300',
       )}
     >
@@ -104,8 +104,8 @@ export function SourcePicker({ onStart }: { onStart: (options: RecordOptions) =>
             <p className="mt-10 text-sm text-neutral-600">Looking for screens and windows…</p>
           ) : needsPermission ? (
             <div className="mt-8 flex flex-col items-center rounded-2xl border border-neutral-100 px-6 py-10 text-center">
-              <span className="flex size-12 items-center justify-center rounded-full bg-x-blue/15">
-                <MonitorUp className="size-6 text-x-blue" />
+              <span className="flex size-12 items-center justify-center rounded-full bg-neutral-100">
+                <MonitorUp className="size-6 text-neutral-900" />
               </span>
               <div className="mt-4 text-[17px] font-extrabold text-neutral-900">
                 Allow screen recording first

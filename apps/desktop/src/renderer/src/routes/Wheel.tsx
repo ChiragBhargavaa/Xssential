@@ -122,8 +122,8 @@ export default function Wheel() {
           <path
             key={tool.id}
             d={sectorPath(i)}
-            fill={active === i ? '#1d9bf0' : '#ffffff'}
-            stroke={active === i ? '#1d9bf0' : '#eff3f4'}
+            fill={active === i ? '#0f1419' : '#ffffff'}
+            stroke={active === i ? '#0f1419' : '#eff3f4'}
             strokeWidth={1}
             className="transition-[fill] duration-75"
           />
@@ -156,7 +156,7 @@ export default function Wheel() {
           <span className="text-[11px] leading-tight text-neutral-600">{hovered.hint}</span>
         ) : (
           <>
-            <span className="text-2xl font-black text-x-blue">X</span>
+            <span className="text-2xl font-black text-neutral-900">X</span>
             <span className="text-[10px] leading-tight text-neutral-600">
               keys 1–6
               <br />

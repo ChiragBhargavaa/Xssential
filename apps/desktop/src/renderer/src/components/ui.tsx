@@ -4,14 +4,11 @@ import { Loader2 } from 'lucide-react'
 import type { HistoryMode } from '../lib/hooks'
 import { cx, isMac } from '../lib/utils'
 
-type Variant = 'primary' | 'inverse' | 'secondary' | 'ghost' | 'danger'
+type Variant = 'primary' | 'secondary' | 'ghost' | 'danger'
 
-// X's pill buttons: blue for the main action, black for strong secondary actions,
-// outlined for the rest
+// X's pill buttons: black for the main action, outlined for the rest
 const variants: Record<Variant, string> = {
   primary:
-    'bg-x-blue text-white hover:bg-x-blue-hover disabled:opacity-50 disabled:hover:bg-x-blue',
-  inverse:
     'bg-neutral-900 text-white hover:bg-neutral-900/85 disabled:opacity-50 disabled:hover:bg-neutral-900',
   secondary:
     'border border-neutral-300 text-neutral-900 hover:bg-neutral-100 disabled:text-neutral-600 disabled:hover:bg-transparent',
@@ -82,8 +79,8 @@ export function IconButton({
       className={cx(
         'inline-flex size-9 shrink-0 items-center justify-center rounded-full transition-colors disabled:cursor-not-allowed disabled:opacity-35 [-webkit-app-region:no-drag]',
         active
-          ? 'bg-x-blue/15 text-x-blue'
-          : 'text-neutral-900 hover:bg-x-blue/10 hover:text-x-blue disabled:hover:bg-transparent disabled:hover:text-neutral-900',
+          ? 'bg-neutral-100 text-neutral-900'
+          : 'text-neutral-900 hover:bg-neutral-100 disabled:hover:bg-transparent',
         className,
       )}
       {...props}
@@ -232,7 +229,7 @@ export function Toggle({
         onClick={() => onChange(!checked)}
         className={cx(
           'relative mt-0.5 inline-flex h-5 w-9 shrink-0 rounded-full transition-colors',
-          checked ? 'bg-x-blue' : 'bg-neutral-300',
+          checked ? 'bg-neutral-900' : 'bg-neutral-300',
         )}
       >
         <span
@@ -275,7 +272,7 @@ export function ProgressBar({ value }: { value: number }) {
   return (
     <div className="h-1.5 w-full overflow-hidden rounded-full bg-neutral-100">
       <div
-        className="h-full rounded-full bg-x-blue transition-[width] duration-200"
+        className="h-full rounded-full bg-neutral-900 transition-[width] duration-200"
         style={{ width: `${Math.round(value * 100)}%` }}
       />
     </div>

@@ -201,7 +201,7 @@ export function MusicPanel({
     return (
       <div className="space-y-4">
         <div className="flex items-start gap-3 rounded-xl bg-neutral-50 p-3 ring-1 ring-neutral-200">
-          <div className="flex size-9 shrink-0 items-center justify-center rounded-full bg-x-blue">
+          <div className="flex size-9 shrink-0 items-center justify-center rounded-full bg-neutral-900">
             <Music className="size-4 text-white" />
           </div>
           <div className="min-w-0 flex-1">
@@ -318,7 +318,7 @@ export function MusicPanel({
               e.preventDefault()
               void search(query)
             }}
-            className="flex items-center gap-2 rounded-full bg-neutral-100 px-3.5 ring-1 ring-neutral-100 focus-within:bg-white focus-within:ring-x-blue"
+            className="flex items-center gap-2 rounded-full bg-neutral-100 px-3.5 ring-1 ring-neutral-100 focus-within:bg-white focus-within:ring-neutral-900"
           >
             <Search className="size-3.5 text-neutral-600" />
             <input

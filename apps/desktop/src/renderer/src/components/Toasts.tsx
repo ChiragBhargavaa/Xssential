@@ -11,8 +11,8 @@ const icons: Record<ToastTone, typeof Info> = {
 
 // Like X's snackbar: blue for news, red for errors, yellow for warnings
 const tones: Record<ToastTone, string> = {
-  info: 'bg-x-blue text-white',
-  success: 'bg-x-blue text-white',
+  info: 'bg-neutral-900 text-white',
+  success: 'bg-neutral-900 text-white',
   warning: 'bg-x-yellow text-neutral-900',
   error: 'bg-x-red text-white',
 }

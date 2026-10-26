@@ -80,7 +80,7 @@ function ShortcutRecorder({
       className={cx(
         'flex h-9 min-w-40 items-center justify-center rounded-full px-4 text-sm font-bold ring-1 transition-colors',
         listening
-          ? 'bg-x-blue/10 text-x-blue ring-x-blue'
+          ? 'bg-neutral-100 text-neutral-900 ring-2 ring-neutral-900'
           : 'text-neutral-900 ring-neutral-300 hover:bg-neutral-100',
       )}
     >
@@ -124,7 +124,7 @@ export default function Home() {
       <main className="flex-1 overflow-y-auto">
         <div className="mx-auto max-w-3xl px-8 py-10">
           <div className="flex items-center gap-4">
-            <div className="flex size-14 items-center justify-center rounded-2xl bg-x-blue text-3xl font-black text-white">
+            <div className="flex size-14 items-center justify-center rounded-2xl bg-neutral-900 text-3xl font-black text-white">
               X
             </div>
             <div>
@@ -146,7 +146,7 @@ export default function Home() {
                   Screenshots and recordings need macOS's permission. It takes a minute to set up.
                 </div>
               </div>
-              <Button variant="inverse" onClick={() => window.api.permissions.openSetup()}>
+              <Button variant="primary" onClick={() => window.api.permissions.openSetup()}>
                 Set up
               </Button>
             </div>
@@ -173,8 +173,8 @@ export default function Home() {
                   onClick={() => window.api.tools.launch(tool.id)}
                   className="group rounded-2xl border border-neutral-100 p-4 text-left transition-colors hover:bg-neutral-50"
                 >
-                  <span className="flex size-10 items-center justify-center rounded-full bg-x-blue/10 transition-colors group-hover:bg-x-blue/20">
-                    <Icon className="size-5 text-x-blue" />
+                  <span className="flex size-10 items-center justify-center rounded-full bg-neutral-100 transition-colors group-hover:bg-neutral-200">
+                    <Icon className="size-5 text-neutral-900" />
                   </span>
                   <div className="mt-3 text-[15px] font-bold text-neutral-900">{tool.label}</div>
                   <div className="mt-1 text-[13px] leading-relaxed text-neutral-600">

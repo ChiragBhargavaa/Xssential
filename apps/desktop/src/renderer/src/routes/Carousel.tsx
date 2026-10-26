@@ -411,7 +411,7 @@ export default function Carousel() {
           </Section>
           <div className="px-4 py-4">
             <div className="flex gap-2.5 rounded-xl bg-neutral-50 p-3 text-xs leading-relaxed text-neutral-600 ring-1 ring-neutral-200">
-              <Info className="mt-0.5 size-3.5 shrink-0 text-x-blue" />
+              <Info className="mt-0.5 size-3.5 shrink-0 text-neutral-600" />
               <p>
                 X shows up to {X_IMAGES_PER_POST} images per post as a swipeable carousel. Keep
                 every slide the same shape; portrait 4:5 or 3:4 shows in full on the web and in the

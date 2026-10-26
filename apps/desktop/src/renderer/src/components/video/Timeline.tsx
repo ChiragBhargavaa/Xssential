@@ -122,7 +122,7 @@ export function Timeline({
         />
         {/* Kept range */}
         <div
-          className="pointer-events-none absolute inset-y-0 rounded-md border-2 border-x-blue"
+          className="pointer-events-none absolute inset-y-0 rounded-md border-2 border-neutral-900"
           style={{ left: pct(start), width: `calc(${pct(end)} - ${pct(start)})` }}
         />
         {(['start', 'end'] as const).map((edge) => (
@@ -130,7 +130,7 @@ export function Timeline({
             key={edge}
             onPointerDown={begin(edge)}
             className={cx(
-              'absolute inset-y-0 flex w-3 cursor-ew-resize items-center justify-center bg-x-blue',
+              'absolute inset-y-0 flex w-3 cursor-ew-resize items-center justify-center bg-neutral-900',
               edge === 'start' ? 'rounded-l-md' : '-translate-x-full rounded-r-md',
             )}
             style={{ left: pct(edge === 'start' ? start : end) }}

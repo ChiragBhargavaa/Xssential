@@ -6,7 +6,7 @@ import { cx } from '../lib/utils'
 
 const swatch =
   'size-7 shrink-0 rounded-full ring-1 ring-black/10 transition-transform hover:scale-110 [-webkit-app-region:no-drag]'
-const selected = 'outline-2 outline-offset-2 outline-x-blue'
+const selected = 'outline-2 outline-offset-2 outline-neutral-900'
 
 const gradientCss = (stops: string[], angle: number) =>
   `linear-gradient(${angle}deg, ${stops.join(', ')})`
@@ -123,7 +123,7 @@ function RatioBox({ frame, active }: { frame: FramePreset; active: boolean }) {
         className={cx(
           'rounded-[3px] border-[1.5px]',
           frame.width ? '' : 'border-dashed',
-          active ? 'border-x-blue' : 'border-neutral-300',
+          active ? 'border-neutral-900' : 'border-neutral-300',
         )}
         style={{ width: w, height: h }}
       />
@@ -158,7 +158,7 @@ export function FramePicker({
               className={cx(
                 'flex flex-col items-center gap-1 rounded-xl px-1 py-2 text-xs ring-1 transition-colors',
                 active
-                  ? 'bg-x-blue/10 text-neutral-900 ring-x-blue'
+                  ? 'bg-neutral-50 font-bold text-neutral-900 ring-2 ring-neutral-900'
                   : 'bg-white text-neutral-600 ring-neutral-200 hover:bg-neutral-50 hover:text-neutral-900',
               )}
             >

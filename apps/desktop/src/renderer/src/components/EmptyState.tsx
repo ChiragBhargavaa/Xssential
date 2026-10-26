@@ -45,7 +45,7 @@ export function useFileDrop(accept: (file: File) => boolean, onFile: (file: File
 export function DropOverlay({ show, label }: { show: boolean; label: string }) {
   if (!show) return null
   return (
-    <div className="pointer-events-none fixed inset-3 z-40 flex items-center justify-center rounded-2xl border-2 border-dashed border-x-blue bg-x-blue/10 text-sm font-bold text-neutral-900 backdrop-blur-[2px]">
+    <div className="pointer-events-none fixed inset-3 z-40 flex items-center justify-center rounded-2xl border-2 border-dashed border-neutral-900 bg-neutral-900/5 text-sm font-bold text-neutral-900 backdrop-blur-[2px]">
       {label}
     </div>
   )
@@ -67,8 +67,8 @@ export function EmptyState({
   return (
     <div className={cx('flex flex-1 items-center justify-center p-8', className)}>
       <div className="fade-in flex max-w-md flex-col items-center text-center">
-        <div className="flex size-14 items-center justify-center rounded-full bg-x-blue/10 ring-1 ring-x-blue/20">
-          <Icon className="size-6 text-x-blue" />
+        <div className="flex size-14 items-center justify-center rounded-full bg-neutral-100">
+          <Icon className="size-6 text-neutral-900" />
         </div>
         <h2 className="mt-5 text-[23px] font-extrabold tracking-tight">{title}</h2>
         <div className="mt-2 text-[15px] leading-relaxed text-neutral-600">{description}</div>
