@@ -23,6 +23,37 @@
 | macOS (Apple Silicon and Intel) | [Xssential-mac-universal.dmg](https://github.com/ChiragBhargavaa/Xssential/releases/latest/download/Xssential-mac-universal.dmg) |
 | Windows 10+ (64-bit)            | [Xssential-win-setup.exe](https://github.com/ChiragBhargavaa/Xssential/releases/latest/download/Xssential-win-setup.exe)         |
 
+## Features
+
+Xssential lives in the menu bar (macOS) or the notification area (Windows). Press
+<kbd>⌥</kbd> <kbd>⇧</kbd> <kbd>X</kbd> (<kbd>Alt</kbd>+<kbd>Shift</kbd>+<kbd>X</kbd> on Windows) anywhere to open the
+tool wheel, then click a tool or press its number (1–6). The shortcut can be changed in Settings.
+
+| Tool           | What it does                                                                                                                                                                                                                                                     |
+| -------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **Screenshot** | Freezes the screen so you can drag out an area, then opens it in the editor: crop, blur or pixelate private details, round the corners, add a shadow and a gradient, color or image background, and fit it to an X post size. Copy it or save it as PNG or JPEG. |
+| **Record**     | Records a screen or a window to MP4, then opens the video editor.                                                                                                                                                                                                |
+| **Edit video** | Opens your own video. Trim, crop, blur or pixelate areas (for the whole clip or part of it), remove the original sound, add background music and export an MP4 for X.                                                                                            |
+| **Carousel**   | Splits a long screenshot (or a wide panorama) into same-size slides for X's swipeable multi-image posts, cutting between lines of text instead of through them.                                                                                                  |
+| **Edit image** | The screenshot editor for an image you already have (open, paste or drop it).                                                                                                                                                                                    |
+
+### X sizes used
+
+- **Images:** 16:9 (1600 × 900), 1:1 (1200 × 1200), 4:5 (1080 × 1350), 3:4 (1080 × 1440), 2:1 (1600 × 800) and the 3:1 profile header (1500 × 500). Up to 4 images per post, 5 MB each ([X media best practices](https://docs.x.com/x-api/media/quickstart/best-practices)).
+- **Carousels:** since mid-2026 X shows posts with 2–4 images as a swipeable carousel. Portrait 4:5 (the default) and 3:4 show uncropped on the web and in the app; 9:16 is only shown in full on iOS; landscape is capped at 20:17. Keep every slide the same shape.
+- **Video:** MP4 with H.264 High profile and AAC-LC audio at 30 or 60 fps, at least 5 Mbps, up to 1080p (16:9, 1:1, 4:5 or 9:16).
+
+### Screen recording permission (macOS)
+
+Screenshots and recordings need macOS's Screen Recording permission. The first time you pick one of
+those tools, Xssential opens a short setup window: it adds itself to the list in System Settings, waits
+for you to switch it on, then restarts itself (or follows macOS's "Quit & Reopen") and goes straight
+back to the tool you picked.
+
+### Background music
+
+The free music library searches [Openverse](https://openverse.org) for tracks licensed CC0, public domain or CC BY, which can be used in any post. CC BY tracks need a credit; Xssential shows the credit line and can copy it for you. You can also use your own audio file.
+
 ## Repository layout
 
 This is a [pnpm](https://pnpm.io) monorepo:
@@ -47,6 +78,17 @@ pnpm install
 pnpm dev:desktop   # run the desktop app with hot reload
 pnpm dev:web       # run the landing page at http://localhost:3000
 ```
+
+To open a tool straight away while developing, set `XSSENTIAL_OPEN_TOOL` to one of `screenshot`,
+`record`, `edit-video`, `carousel`, `edit-image` or `settings`:
+
+```bash
+XSSENTIAL_OPEN_TOOL=carousel pnpm dev:desktop
+```
+
+On macOS, screenshots and recordings need the Screen Recording permission (System Settings → Privacy &
+Security → Screen & System Audio Recording). In development the permission belongs to the terminal app
+that runs `pnpm dev:desktop`, so switch that app on and restart the dev command.
 
 Other scripts:
 

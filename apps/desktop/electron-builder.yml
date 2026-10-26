@@ -24,6 +24,9 @@ mac:
       arch: universal
   hardenedRuntime: true
   entitlementsInherit: build/entitlements.mac.plist
+  extendInfo:
+    # Lives in the menu bar: no Dock icon until a window is open
+    LSUIElement: true
 
 win:
   target:
