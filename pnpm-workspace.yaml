@@ -1,0 +1,11 @@
+packages:
+  - apps/*
+
+onlyBuiltDependencies:
+  - electron
+  - esbuild
+  - sharp
+  - '@tailwindcss/oxide'
+
+ignoredBuiltDependencies:
+  - electron-winstaller

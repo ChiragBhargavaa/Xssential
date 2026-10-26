@@ -1,0 +1,22 @@
+node_modules/
+.pnpm-store/
+
+# desktop
+apps/desktop/out/
+apps/desktop/dist/
+
+# web
+apps/web/.next/
+apps/web/out/
+apps/web/next-env.d.ts
+
+*.log
+.env*
+!.env.example
+.DS_Store
+Thumbs.db
+.vscode/*
+!.vscode/extensions.json
+.idea/
+*.tsbuildinfo
+package-lock.json

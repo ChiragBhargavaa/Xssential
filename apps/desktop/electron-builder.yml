@@ -1,0 +1,44 @@
+appId: io.github.chiragbhargavaa.xssential
+productName: Xssential
+copyright: Copyright © 2026 Xssential contributors
+
+directories:
+  buildResources: build
+  output: dist
+
+files:
+  - out/**
+  - package.json
+  - '!**/*.{map,ts,tsx}'
+
+# Stable, version-less file names so the landing page can always link to
+# https://github.com/<owner>/<repo>/releases/latest/download/<file>
+artifactName: ${productName}-${os}-${arch}.${ext}
+
+mac:
+  category: public.app-category.productivity
+  target:
+    - target: dmg
+      arch: universal
+    - target: zip # required by the auto-updater on macOS
+      arch: universal
+  hardenedRuntime: true
+  entitlementsInherit: build/entitlements.mac.plist
+
+win:
+  target:
+    - target: nsis
+      arch: x64
+
+nsis:
+  artifactName: ${productName}-win-setup.${ext}
+  oneClick: false
+  allowToChangeInstallationDirectory: true
+  createDesktopShortcut: always
+  shortcutName: Xssential
+
+publish:
+  provider: github
+  owner: ChiragBhargavaa
+  repo: Xssential
+  releaseType: release
