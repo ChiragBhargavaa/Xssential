@@ -403,15 +403,18 @@ export function VideoEditor({
             frames={VIDEO_FRAMES}
             autoSize={layout}
           />
-          <RedactionSection
-            comp={doc.comp}
-            update={updateComp}
-            selectedId={selectedId}
-            onSelect={setSelectedId}
-            defaults={defaults}
-            onDefaultsChange={setDefaults}
-            video={{ duration: info.duration, time }}
-          />
+          {/* Only shown while blurring, or with a blurred area selected */}
+          {(mode === 'blur' || doc.comp.redactions.some((r) => r.id === selectedId)) && (
+            <RedactionSection
+              comp={doc.comp}
+              update={updateComp}
+              selectedId={selectedId}
+              onSelect={setSelectedId}
+              defaults={defaults}
+              onDefaultsChange={setDefaults}
+              video={{ duration: info.duration, time }}
+            />
+          )}
           <Section title="Original audio">
             <Toggle
               label="Keep the video's own sound"

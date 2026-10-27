@@ -3,7 +3,7 @@ import type { Composition, FramePreset, Redaction } from '../lib/composition'
 import type { HistoryMode } from '../lib/hooks'
 import { formatTime, isMac } from '../lib/utils'
 import { BackgroundPicker, FramePicker } from './StylePickers'
-import { Button, Kbd, Section, Slider, Toggle } from './ui'
+import { Button, Section, Slider, Toggle } from './ui'
 
 type Update = (fn: (c: Composition) => Composition, mode?: HistoryMode) => void
 
@@ -31,7 +31,7 @@ export function StyleSections({
       <Section title="Background">
         <BackgroundPicker
           value={comp.background}
-          onChange={(background) => update((c) => ({ ...c, background }))}
+          onChange={(background, mode) => update((c) => ({ ...c, background }), mode)}
         />
       </Section>
       <Section title="Style">
@@ -126,13 +126,7 @@ export function RedactionSection({
       }
     >
       <p className="mb-3 text-xs leading-relaxed text-neutral-600">
-        {selected ? (
-          'Editing the selected area.'
-        ) : (
-          <>
-            Pick the blur tool (<Kbd>B</Kbd>) and drag over anything private.
-          </>
-        )}
+        {selected ? 'Editing the selected area.' : 'Drag over anything private.'}
       </p>
       <div className="space-y-4">
         <Slider

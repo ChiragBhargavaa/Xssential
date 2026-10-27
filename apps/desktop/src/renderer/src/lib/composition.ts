@@ -19,11 +19,18 @@ export interface Redaction {
   end?: number
 }
 
+// Pushes a background image back so the screenshot stays in front. Each goes from 0 to 100.
+export interface ImageEffects {
+  blur: number
+  glass: number
+  grain: number
+}
+
 export type Background =
   | { kind: 'none' }
   | { kind: 'solid'; color: string }
   // `photo` is the id of a built-in photo; without it the image is the user's own
-  | { kind: 'image'; url: string; photo?: string }
+  | { kind: 'image'; url: string; photo?: string; effects?: ImageEffects }
 
 export interface Composition {
   crop: Rect | null
@@ -176,12 +183,103 @@ function roundRectPath(ctx: Ctx, r: Rect, radius: number) {
   ctx.roundRect(r.x, r.y, r.w, r.h, Math.max(0, Math.min(radius, r.w / 2, r.h / 2)))
 }
 
-function drawCover(ctx: Ctx, image: CanvasImageSource, w: number, h: number) {
+function drawCover(ctx: Ctx, image: CanvasImageSource, r: Rect) {
   const iw = (image as { width: number }).width
   const ih = (image as { height: number }).height
   if (!iw || !ih) return
-  const s = Math.max(w / iw, h / ih)
-  ctx.drawImage(image, (w - iw * s) / 2, (h - ih * s) / 2, iw * s, ih * s)
+  const s = Math.max(r.w / iw, r.h / ih)
+  ctx.drawImage(image, r.x + (r.w - iw * s) / 2, r.y + (r.h - ih * s) / 2, iw * s, ih * s)
+}
+
+let noiseTile: OffscreenCanvas | null = null
+function noise(): OffscreenCanvas {
+  if (noiseTile) return noiseTile
+  const size = 256
+  noiseTile = new OffscreenCanvas(size, size)
+  const ctx = noiseTile.getContext('2d')!
+  const pixels = ctx.createImageData(size, size)
+  // A fixed seed keeps the grain the same in previews and exports
+  let seed = 1
+  const random = () => (seed = (seed * 16807) % 2147483647) / 2147483647
+  for (let i = 0; i < pixels.data.length; i += 4) {
+    const v = 128 + (random() + random() - 1) * 127
+    pixels.data[i] = pixels.data[i + 1] = pixels.data[i + 2] = v
+    pixels.data[i + 3] = 255
+  }
+  ctx.putImageData(pixels, 0, 0)
+  return noiseTile
+}
+
+// `size` is the width of one speck in canvas pixels
+function fillNoise(
+  ctx: Ctx,
+  w: number,
+  h: number,
+  size: number,
+  blend: GlobalCompositeOperation,
+  alpha: number,
+) {
+  const pattern = ctx.createPattern(noise(), 'repeat')!
+  pattern.setTransform(new DOMMatrix().scale(size))
+  ctx.save()
+  ctx.globalCompositeOperation = blend
+  ctx.globalAlpha = alpha
+  ctx.fillStyle = pattern
+  ctx.fillRect(0, 0, w, h)
+  ctx.restore()
+}
+
+const hasEffects = (fx: ImageEffects | undefined): fx is ImageEffects =>
+  !!fx && (fx.blur > 0 || fx.glass > 0 || fx.grain > 0)
+
+// The finished background is kept per image and size, so video frames and redraws don't
+// blur it again
+const effectsCache = new WeakMap<object, { key: string; canvas: OffscreenCanvas }[]>()
+
+function withEffects(image: CanvasImageSource, fx: ImageEffects, w: number, h: number) {
+  const width = Math.max(1, Math.ceil(w))
+  const height = Math.max(1, Math.ceil(h))
+  const key = `${width}x${height} ${fx.blur} ${fx.glass} ${fx.grain}`
+  const cached = effectsCache.get(image) ?? []
+  const hit = cached.find((c) => c.key === key)
+  if (hit) return hit.canvas
+
+  // Sizes are relative to the canvas so previews and exports look the same
+  const unit = Math.max(width, height) / 100
+  const glass = fx.glass / 100
+  const grain = fx.grain / 100
+  // Frosted glass scatters light, so it softens the image a little on its own
+  const radius = unit * ((fx.blur / 100) * 5 + glass * 1.5)
+  const filters = [radius > 0 && `blur(${radius}px)`, glass > 0 && `saturate(${1 + 0.4 * glass})`]
+  // A blur fades out toward the edges of whatever it is drawn on, so it is drawn on a
+  // larger canvas and only the middle is kept
+  const m = Math.ceil(radius * 3)
+  const soft = new OffscreenCanvas(width + 2 * m, height + 2 * m)
+  const softCtx = soft.getContext('2d')!
+  softCtx.filter = filters.filter(Boolean).join(' ') || 'none'
+  drawCover(softCtx, image, fullRect(soft.width, soft.height))
+
+  const canvas = new OffscreenCanvas(width, height)
+  const ctx = canvas.getContext('2d')!
+  ctx.drawImage(soft, m, m, width, height, 0, 0, width, height)
+
+  if (glass > 0) {
+    // A milky pane with light catching the top corner, and a fine frosted texture
+    ctx.fillStyle = `rgba(255, 255, 255, ${0.22 * glass})`
+    ctx.fillRect(0, 0, width, height)
+    const sheen = ctx.createLinearGradient(0, 0, width, height)
+    sheen.addColorStop(0, `rgba(255, 255, 255, ${0.3 * glass})`)
+    sheen.addColorStop(0.45, 'rgba(255, 255, 255, 0)')
+    sheen.addColorStop(1, `rgba(255, 255, 255, ${0.1 * glass})`)
+    ctx.fillStyle = sheen
+    ctx.fillRect(0, 0, width, height)
+    fillNoise(ctx, width, height, unit / 16, 'soft-light', 0.5 * glass)
+  }
+  if (grain > 0) fillNoise(ctx, width, height, unit / 8, 'overlay', 0.6 * grain)
+
+  // Two sizes cover the preview and an export running next to it
+  effectsCache.set(image, [{ key, canvas }, ...cached].slice(0, 2))
+  return canvas
 }
 
 export function drawBackground(
@@ -200,7 +298,8 @@ export function drawBackground(
     ctx.fillStyle = bg.color
     ctx.fillRect(0, 0, w, h)
   } else if (bg.kind === 'image' && image) {
-    drawCover(ctx, image, w, h)
+    if (hasEffects(bg.effects)) ctx.drawImage(withEffects(image, bg.effects, w, h), 0, 0)
+    else drawCover(ctx, image, fullRect(w, h))
   }
 }
 

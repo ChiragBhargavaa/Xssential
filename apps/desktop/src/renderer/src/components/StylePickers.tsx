@@ -1,8 +1,10 @@
 import { useRef } from 'react'
 import { ImagePlus } from 'lucide-react'
-import type { Background, FramePreset } from '../lib/composition'
-import { PHOTOS } from '../lib/presets'
+import type { Background, FramePreset, ImageEffects } from '../lib/composition'
+import type { HistoryMode } from '../lib/hooks'
+import { DEFAULT_IMAGE_EFFECTS, PHOTOS } from '../lib/presets'
 import { cx } from '../lib/utils'
+import { Slider } from './ui'
 
 const swatch =
   'size-7 shrink-0 rounded-full ring-1 ring-black/10 transition-transform hover:scale-110 [-webkit-app-region:no-drag]'
@@ -23,19 +25,22 @@ export function BackgroundPicker({
   onChange,
 }: {
   value: Background
-  onChange: (bg: Background) => void
+  onChange: (bg: Background, mode?: HistoryMode) => void
 }) {
   const fileInput = useRef<HTMLInputElement>(null)
   const color = value.kind === 'solid' ? value.color : null
-  const uploaded = value.kind === 'image' && !value.photo ? value.url : null
+  const own = value.kind === 'image' && !value.photo ? value : null
+  const uploaded = own?.url ?? null
 
   const upload = async (file: File) => {
+    // A new image keeps the effects the last one had
+    const effects = own?.effects ?? DEFAULT_IMAGE_EFFECTS
     try {
       const data = new Uint8Array(await file.arrayBuffer())
-      onChange({ kind: 'image', url: await window.api.backgrounds.save(data, file.type) })
+      onChange({ kind: 'image', url: await window.api.backgrounds.save(data, file.type), effects })
     } catch {
       // An image the app can't keep is still used until the editor closes
-      onChange({ kind: 'image', url: URL.createObjectURL(file) })
+      onChange({ kind: 'image', url: URL.createObjectURL(file), effects })
     }
   }
 
@@ -82,6 +87,12 @@ export function BackgroundPicker({
           />
         </label>
       </div>
+      {own && (
+        <EffectsPanel
+          effects={own.effects ?? { blur: 0, glass: 0, grain: 0 }}
+          onChange={(effects, mode) => onChange({ ...own, effects }, mode)}
+        />
+      )}
       <input
         ref={fileInput}
         type="file"
@@ -93,6 +104,36 @@ export function BackgroundPicker({
           if (file) void upload(file)
         }}
       />
+    </div>
+  )
+}
+
+const EFFECTS: { key: keyof ImageEffects; label: string }[] = [
+  { key: 'blur', label: 'Blur' },
+  { key: 'glass', label: 'Glass' },
+  { key: 'grain', label: 'Grain' },
+]
+
+function EffectsPanel({
+  effects,
+  onChange,
+}: {
+  effects: ImageEffects
+  onChange: (effects: ImageEffects, mode: HistoryMode) => void
+}) {
+  return (
+    <div className="space-y-4 rounded-lg bg-neutral-50 p-3 ring-1 ring-neutral-200">
+      {EFFECTS.map(({ key, label }) => (
+        <Slider
+          key={key}
+          label={label}
+          value={effects[key]}
+          min={0}
+          max={100}
+          unit="%"
+          onChange={(v, mode) => onChange({ ...effects, [key]: v }, mode)}
+        />
+      ))}
     </div>
   )
 }

@@ -1,4 +1,4 @@
-import type { Background, Composition, FramePreset } from './composition'
+import type { Background, Composition, FramePreset, ImageEffects } from './composition'
 
 // Canvas sizes for screenshots on X. A 16:9 image looks the same on the web and on phones;
 // a 4:5 one shows in full on phones and takes up more of the timeline. Up to 4 images of
@@ -117,6 +117,9 @@ export function photoBackground(id: string | undefined): Background | null {
 }
 
 export const DEFAULT_BACKGROUND = photoBackground('prism')!
+
+// Your own image starts out of focus, since it sits behind the screenshot
+export const DEFAULT_IMAGE_EFFECTS: ImageEffects = { blur: 40, glass: 0, grain: 0 }
 
 export const defaultComposition = (frame = 'auto'): Composition => ({
   crop: null,

@@ -338,14 +338,17 @@ export default function ImageEditor() {
               frames={IMAGE_FRAMES}
               autoSize={layout}
             />
-            <RedactionSection
-              comp={comp}
-              update={history.update}
-              selectedId={selectedId}
-              onSelect={setSelectedId}
-              defaults={defaults}
-              onDefaultsChange={setDefaults}
-            />
+            {/* Only shown while blurring, or with a blurred area selected */}
+            {(mode === 'blur' || comp.redactions.some((r) => r.id === selectedId)) && (
+              <RedactionSection
+                comp={comp}
+                update={history.update}
+                selectedId={selectedId}
+                onSelect={setSelectedId}
+                defaults={defaults}
+                onDefaultsChange={setDefaults}
+              />
+            )}
           </div>
           {/* Pinned below the scrolling settings so the image can always be sent off */}
           <Section title="Export" className="border-t">
