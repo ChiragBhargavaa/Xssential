@@ -22,7 +22,6 @@ export interface Redaction {
 export type Background =
   | { kind: 'none' }
   | { kind: 'solid'; color: string }
-  | { kind: 'gradient'; stops: string[]; angle: number }
   // `photo` is the id of a built-in photo; uploaded images only have a blob URL
   | { kind: 'image'; url: string; photo?: string }
 
@@ -177,15 +176,6 @@ function roundRectPath(ctx: Ctx, r: Rect, radius: number) {
   ctx.roundRect(r.x, r.y, r.w, r.h, Math.max(0, Math.min(radius, r.w / 2, r.h / 2)))
 }
 
-function gradientEndpoints(angle: number, w: number, h: number) {
-  // CSS convention: 0deg points up, 90deg points right
-  const rad = (angle * Math.PI) / 180
-  const dx = Math.sin(rad)
-  const dy = -Math.cos(rad)
-  const half = Math.abs((w / 2) * dx) + Math.abs((h / 2) * dy)
-  return [w / 2 - dx * half, h / 2 - dy * half, w / 2 + dx * half, h / 2 + dy * half] as const
-}
-
 function drawCover(ctx: Ctx, image: CanvasImageSource, w: number, h: number) {
   const iw = (image as { width: number }).width
   const ih = (image as { height: number }).height
@@ -208,13 +198,6 @@ export function drawBackground(
   }
   if (bg.kind === 'solid') {
     ctx.fillStyle = bg.color
-    ctx.fillRect(0, 0, w, h)
-  } else if (bg.kind === 'gradient') {
-    const gradient = ctx.createLinearGradient(...gradientEndpoints(bg.angle, w, h))
-    bg.stops.forEach((color, i) =>
-      gradient.addColorStop(i / Math.max(1, bg.stops.length - 1), color),
-    )
-    ctx.fillStyle = gradient
     ctx.fillRect(0, 0, w, h)
   } else if (bg.kind === 'image' && image) {
     drawCover(ctx, image, w, h)

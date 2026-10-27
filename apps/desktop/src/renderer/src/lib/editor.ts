@@ -14,8 +14,12 @@ export function loadStyle(key: string, frames: FramePreset[]): Composition {
     const saved = JSON.parse(localStorage.getItem(key) ?? 'null') as Partial<Composition> | null
     if (!saved) return base
     const style = { ...base, ...pickStyle(saved as Composition) }
-    if (style.background.kind === 'image') {
-      style.background = photoBackground(style.background.photo) ?? base.background
+    const bg = style.background
+    if (bg.kind === 'image') {
+      style.background = photoBackground(bg.photo) ?? base.background
+    } else if (bg.kind !== 'none' && bg.kind !== 'solid') {
+      // A gradient from an earlier version
+      style.background = base.background
     }
     if (!frames.some((f) => f.id === style.frame)) style.frame = base.frame
     return style

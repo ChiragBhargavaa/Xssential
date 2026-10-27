@@ -68,26 +68,6 @@ export const VIDEO_FRAMES: FramePreset[] = [
 // X keeps 1080p for subscribers; this keeps "Original" exports inside that
 export const VIDEO_LIMITS = { maxLong: 1920, maxShort: 1200, even: true }
 
-export interface Gradient {
-  id: string
-  stops: string[]
-  angle: number
-}
-
-// Built from X's accent colors (blue, purple, pink, orange, yellow, green) and its dark themes
-export const GRADIENTS: Gradient[] = [
-  { id: 'x-blue', stops: ['#1d9bf0', '#0b5ea8'], angle: 135 },
-  { id: 'x-twilight', stops: ['#1d9bf0', '#7856ff'], angle: 135 },
-  { id: 'x-purple', stops: ['#7856ff', '#f91880'], angle: 135 },
-  { id: 'x-sunset', stops: ['#ff7a00', '#f91880'], angle: 135 },
-  { id: 'x-gold', stops: ['#ffd400', '#ff7a00'], angle: 135 },
-  { id: 'x-mint', stops: ['#00ba7c', '#1d9bf0'], angle: 135 },
-  { id: 'x-dim', stops: ['#15202b', '#273340'], angle: 160 },
-  { id: 'x-night', stops: ['#16181c', '#000000'], angle: 160 },
-  { id: 'x-ink', stops: ['#000000', '#1d9bf0'], angle: 160 },
-  { id: 'x-light', stops: ['#ffffff', '#e8f5fd'], angle: 160 },
-]
-
 export const SOLIDS = [
   '#ffffff',
   '#f7f9f9',
@@ -149,13 +129,7 @@ export function photoBackground(id: string | undefined): Background | null {
   return p ? { kind: 'image', url: p.url, photo: p.id } : null
 }
 
-const defaultGradient = GRADIENTS[0]!
-
-export const DEFAULT_BACKGROUND: Background = {
-  kind: 'gradient',
-  stops: defaultGradient.stops,
-  angle: defaultGradient.angle,
-}
+export const DEFAULT_BACKGROUND = photoBackground('prism')!
 
 export const defaultComposition = (frame = 'auto'): Composition => ({
   crop: null,

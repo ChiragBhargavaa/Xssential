@@ -1,19 +1,12 @@
 import { useRef } from 'react'
 import { ImagePlus } from 'lucide-react'
 import type { Background, FramePreset } from '../lib/composition'
-import { GRADIENTS, PHOTOS, SOLIDS } from '../lib/presets'
+import { PHOTOS, SOLIDS } from '../lib/presets'
 import { cx } from '../lib/utils'
 
 const swatch =
   'size-7 shrink-0 rounded-full ring-1 ring-black/10 transition-transform hover:scale-110 [-webkit-app-region:no-drag]'
 const selected = 'outline-2 outline-offset-2 outline-neutral-900'
-
-const gradientCss = (stops: string[], angle: number) =>
-  `linear-gradient(${angle}deg, ${stops.join(', ')})`
-
-function sameGradient(bg: Background, stops: string[]) {
-  return bg.kind === 'gradient' && bg.stops.join() === stops.join()
-}
 
 export function BackgroundPicker({
   value,
@@ -30,54 +23,6 @@ export function BackgroundPicker({
 
   return (
     <div className="flex flex-col gap-3">
-      <div className="flex flex-wrap gap-2">
-        <button
-          type="button"
-          title={noneLabel}
-          onClick={() => onChange({ kind: 'none' })}
-          className={cx(swatch, 'checkerboard', value.kind === 'none' && selected)}
-        />
-        {GRADIENTS.map((g) => (
-          <button
-            key={g.id}
-            type="button"
-            title={`Gradient: ${g.id}`}
-            onClick={() => onChange({ kind: 'gradient', stops: g.stops, angle: g.angle })}
-            className={cx(swatch, sameGradient(value, g.stops) && selected)}
-            style={{ background: gradientCss(g.stops, g.angle) }}
-          />
-        ))}
-        {SOLIDS.map((color) => (
-          <button
-            key={color}
-            type="button"
-            title={color}
-            onClick={() => onChange({ kind: 'solid', color })}
-            className={cx(swatch, value.kind === 'solid' && value.color === color && selected)}
-            style={{ background: color }}
-          />
-        ))}
-        <label
-          title="Custom color"
-          className={cx(
-            swatch,
-            'relative cursor-pointer overflow-hidden',
-            customColor !== null && selected,
-          )}
-          style={{
-            background:
-              customColor ??
-              'conic-gradient(from 90deg, #f43f5e, #eab308, #22c55e, #06b6d4, #6366f1, #d946ef, #f43f5e)',
-          }}
-        >
-          <input
-            type="color"
-            className="absolute inset-0 cursor-pointer opacity-0"
-            value={customColor ?? '#6366f1'}
-            onChange={(e) => onChange({ kind: 'solid', color: e.target.value })}
-          />
-        </label>
-      </div>
       <div className="flex flex-wrap gap-2">
         {PHOTOS.map((p) => (
           <button
@@ -113,6 +58,44 @@ export function BackgroundPicker({
             e.target.value = ''
           }}
         />
+      </div>
+      <div className="flex flex-wrap gap-2">
+        <button
+          type="button"
+          title={noneLabel}
+          onClick={() => onChange({ kind: 'none' })}
+          className={cx(swatch, 'checkerboard', value.kind === 'none' && selected)}
+        />
+        {SOLIDS.map((color) => (
+          <button
+            key={color}
+            type="button"
+            title={color}
+            onClick={() => onChange({ kind: 'solid', color })}
+            className={cx(swatch, value.kind === 'solid' && value.color === color && selected)}
+            style={{ background: color }}
+          />
+        ))}
+        <label
+          title="Custom color"
+          className={cx(
+            swatch,
+            'relative cursor-pointer overflow-hidden',
+            customColor !== null && selected,
+          )}
+          style={{
+            background:
+              customColor ??
+              'conic-gradient(from 90deg, #f43f5e, #eab308, #22c55e, #06b6d4, #6366f1, #d946ef, #f43f5e)',
+          }}
+        >
+          <input
+            type="color"
+            className="absolute inset-0 cursor-pointer opacity-0"
+            value={customColor ?? '#6366f1'}
+            onChange={(e) => onChange({ kind: 'solid', color: e.target.value })}
+          />
+        </label>
       </div>
     </div>
   )
