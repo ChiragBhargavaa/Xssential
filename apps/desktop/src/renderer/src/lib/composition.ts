@@ -22,7 +22,7 @@ export interface Redaction {
 export type Background =
   | { kind: 'none' }
   | { kind: 'solid'; color: string }
-  // `photo` is the id of a built-in photo; uploaded images only have a blob URL
+  // `photo` is the id of a built-in photo; without it the image is the user's own
   | { kind: 'image'; url: string; photo?: string }
 
 export interface Composition {

@@ -2,6 +2,7 @@ import { app, BrowserWindow, globalShortcut, ipcMain, Menu, shell } from 'electr
 import { electronApp, is, optimizer } from '@electron-toolkit/utils'
 import { autoUpdater } from 'electron-updater'
 import { TOOLS, type ToolId } from '../shared/tools'
+import { registerBackgroundIpc, registerBackgroundScheme } from './backgrounds'
 import { registerCaptureIpc, startCapture } from './capture'
 import { registerFileIpc } from './files'
 import { registerMusicIpc } from './music'
@@ -241,6 +242,8 @@ if (!app.requestSingleInstanceLock()) {
     if (Date.now() - startedAt > 5000) openHome()
   })
 
+  registerBackgroundScheme()
+
   app.whenReady().then(() => {
     electronApp.setAppUserModelId('io.github.chiragbhargavaa.xssential')
     if (isMac && allAppWindows().length === 0) app.dock?.hide()
@@ -251,6 +254,7 @@ if (!app.requestSingleInstanceLock()) {
     setApplicationMenu()
     registerAppIpc()
     registerFileIpc()
+    registerBackgroundIpc()
     registerMusicIpc()
     registerXIpc()
     registerCaptureIpc((png) => openImageEditor(png))

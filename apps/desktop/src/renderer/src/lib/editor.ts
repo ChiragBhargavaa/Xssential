@@ -1,31 +1,35 @@
+import { BACKGROUND_SCHEME } from '../../../shared/tools'
 import type { StageMode } from '../components/Stage'
-import type { Composition, FramePreset } from './composition'
+import type { Background, Composition, FramePreset } from './composition'
 import { defaultComposition, photoBackground } from './presets'
 import { isTextInput } from './utils'
 
 type StyleKeys = 'frame' | 'padding' | 'radius' | 'shadow' | 'background'
 
 // The last used look (size, background, padding...) is remembered per editor, so a brand
-// style only has to be set up once. Uploaded images are blob URLs and can't be kept (the
-// built-in photos are), and a size the editor no longer offers falls back to its first one.
+// style only has to be set up once. A size the editor no longer offers falls back to its
+// first one.
 export function loadStyle(key: string, frames: FramePreset[]): Composition {
   const base = defaultComposition(frames[0]!.id)
   try {
     const saved = JSON.parse(localStorage.getItem(key) ?? 'null') as Partial<Composition> | null
     if (!saved) return base
     const style = { ...base, ...pickStyle(saved as Composition) }
-    const bg = style.background
-    if (bg.kind === 'image') {
-      style.background = photoBackground(bg.photo) ?? base.background
-    } else if (bg.kind !== 'none' && bg.kind !== 'solid') {
-      // A gradient from an earlier version
-      style.background = base.background
-    }
+    style.background = savedBackground(style.background) ?? base.background
     if (!frames.some((f) => f.id === style.frame)) style.frame = base.frame
     return style
   } catch {
     return base
   }
+}
+
+// Built-in photos come back by id, since their URLs change between builds, and uploads the
+// app kept keep their URL. Blob URLs, "none" and gradients from earlier versions don't.
+function savedBackground(bg: Background): Background | null {
+  if (bg.kind === 'solid') return bg
+  if (bg.kind !== 'image') return null
+  if (bg.photo) return photoBackground(bg.photo)
+  return bg.url.startsWith(`${BACKGROUND_SCHEME}:`) ? bg : null
 }
 
 function pickStyle(c: Composition): Pick<Composition, StyleKeys> {

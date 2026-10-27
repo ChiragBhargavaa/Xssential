@@ -68,3 +68,6 @@ export interface ImageFilter {
   name: string
   extensions: string[]
 }
+
+// URL scheme for background images the user uploads (see main/backgrounds.ts)
+export const BACKGROUND_SCHEME = 'xssential-bg'

@@ -90,6 +90,12 @@ const api = {
     reveal: (path: string): void => ipcRenderer.send('files:reveal', path),
   },
 
+  backgrounds: {
+    // Keeps an uploaded background image and returns a URL that still works after a restart
+    save: (data: Uint8Array, type: string): Promise<string> =>
+      ipcRenderer.invoke('backgrounds:save', data, type),
+  },
+
   clipboard: {
     writeImage: (png: Uint8Array): Promise<void> =>
       ipcRenderer.invoke('clipboard:write-image', png),

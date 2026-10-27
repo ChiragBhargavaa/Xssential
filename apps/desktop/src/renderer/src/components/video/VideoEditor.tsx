@@ -402,7 +402,6 @@ export function VideoEditor({
             update={updateComp}
             frames={VIDEO_FRAMES}
             autoSize={layout}
-            noneLabel="None (black)"
           />
           <RedactionSection
             comp={doc.comp}

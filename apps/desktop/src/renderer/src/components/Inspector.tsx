@@ -12,13 +12,11 @@ export function StyleSections({
   update,
   frames,
   autoSize,
-  noneLabel,
 }: {
   comp: Composition
   update: Update
   frames: FramePreset[]
   autoSize: { width: number; height: number }
-  noneLabel?: string
 }) {
   return (
     <>
@@ -33,7 +31,6 @@ export function StyleSections({
       <Section title="Background">
         <BackgroundPicker
           value={comp.background}
-          noneLabel={noneLabel}
           onChange={(background) => update((c) => ({ ...c, background }))}
         />
       </Section>

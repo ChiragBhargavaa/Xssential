@@ -68,19 +68,6 @@ export const VIDEO_FRAMES: FramePreset[] = [
 // X keeps 1080p for subscribers; this keeps "Original" exports inside that
 export const VIDEO_LIMITS = { maxLong: 1920, maxShort: 1200, even: true }
 
-export const SOLIDS = [
-  '#ffffff',
-  '#f7f9f9',
-  '#000000',
-  // X's Dim background
-  '#15202b',
-  '#1d9bf0',
-  '#7856ff',
-  '#f91880',
-  '#ff7a00',
-  '#00ba7c',
-]
-
 export interface Photo {
   id: string
   author: string

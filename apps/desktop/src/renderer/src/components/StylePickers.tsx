@@ -1,25 +1,43 @@
 import { useRef } from 'react'
 import { ImagePlus } from 'lucide-react'
 import type { Background, FramePreset } from '../lib/composition'
-import { PHOTOS, SOLIDS } from '../lib/presets'
+import { PHOTOS } from '../lib/presets'
 import { cx } from '../lib/utils'
 
 const swatch =
   'size-7 shrink-0 rounded-full ring-1 ring-black/10 transition-transform hover:scale-110 [-webkit-app-region:no-drag]'
 const selected = 'outline-2 outline-offset-2 outline-neutral-900'
+const colorWheel =
+  'conic-gradient(from 90deg, #f43f5e, #eab308, #22c55e, #06b6d4, #6366f1, #d946ef, #f43f5e)'
+
+const option = (active: boolean) =>
+  cx(
+    'relative flex items-center gap-2 rounded-xl px-2.5 py-2 text-[13px] font-bold ring-1 transition-colors [-webkit-app-region:no-drag]',
+    active
+      ? 'bg-neutral-50 text-neutral-900 ring-2 ring-neutral-900'
+      : 'bg-white text-neutral-600 ring-neutral-200 hover:bg-neutral-50 hover:text-neutral-900',
+  )
 
 export function BackgroundPicker({
   value,
   onChange,
-  noneLabel = 'None (transparent)',
 }: {
   value: Background
   onChange: (bg: Background) => void
-  noneLabel?: string
 }) {
   const fileInput = useRef<HTMLInputElement>(null)
-  const customColor = value.kind === 'solid' && !SOLIDS.includes(value.color) ? value.color : null
+  const color = value.kind === 'solid' ? value.color : null
   const uploaded = value.kind === 'image' && !value.photo ? value.url : null
+
+  const upload = async (file: File) => {
+    try {
+      const data = new Uint8Array(await file.arrayBuffer())
+      onChange({ kind: 'image', url: await window.api.backgrounds.save(data, file.type) })
+    } catch {
+      // An image the app can't keep is still used until the editor closes
+      onChange({ kind: 'image', url: URL.createObjectURL(file) })
+    }
+  }
 
   return (
     <div className="flex flex-col gap-3">
@@ -34,69 +52,47 @@ export function BackgroundPicker({
             style={{ background: `center / cover url(${p.thumb})` }}
           />
         ))}
-        <button
-          type="button"
-          title="Use your own image"
-          onClick={() => fileInput.current?.click()}
-          className={cx(
-            swatch,
-            'flex items-center justify-center bg-neutral-100 text-neutral-800',
-            uploaded && selected,
-          )}
-          style={uploaded ? { background: `center / cover url(${uploaded})` } : undefined}
-        >
-          {!uploaded && <ImagePlus className="size-3.5" />}
-        </button>
-        <input
-          ref={fileInput}
-          type="file"
-          accept="image/*"
-          hidden
-          onChange={(e) => {
-            const file = e.target.files?.[0]
-            if (file) onChange({ kind: 'image', url: URL.createObjectURL(file) })
-            e.target.value = ''
-          }}
-        />
       </div>
-      <div className="flex flex-wrap gap-2">
+      <div className="grid grid-cols-2 gap-1.5">
         <button
           type="button"
-          title={noneLabel}
-          onClick={() => onChange({ kind: 'none' })}
-          className={cx(swatch, 'checkerboard', value.kind === 'none' && selected)}
-        />
-        {SOLIDS.map((color) => (
-          <button
-            key={color}
-            type="button"
-            title={color}
-            onClick={() => onChange({ kind: 'solid', color })}
-            className={cx(swatch, value.kind === 'solid' && value.color === color && selected)}
-            style={{ background: color }}
-          />
-        ))}
-        <label
-          title="Custom color"
-          className={cx(
-            swatch,
-            'relative cursor-pointer overflow-hidden',
-            customColor !== null && selected,
-          )}
-          style={{
-            background:
-              customColor ??
-              'conic-gradient(from 90deg, #f43f5e, #eab308, #22c55e, #06b6d4, #6366f1, #d946ef, #f43f5e)',
-          }}
+          title="Choose an image from your computer"
+          onClick={() => fileInput.current?.click()}
+          className={option(uploaded !== null)}
         >
+          <span
+            className="flex size-5 shrink-0 items-center justify-center rounded-full bg-neutral-100 ring-1 ring-black/10"
+            style={uploaded ? { background: `center / cover url(${uploaded})` } : undefined}
+          >
+            {!uploaded && <ImagePlus className="size-3" />}
+          </span>
+          Your image
+        </button>
+        <label title="Pick a color" className={cx(option(color !== null), 'cursor-pointer')}>
+          <span
+            className="size-5 shrink-0 rounded-full ring-1 ring-black/10"
+            style={{ background: color ?? colorWheel }}
+          />
+          Color
           <input
             type="color"
             className="absolute inset-0 cursor-pointer opacity-0"
-            value={customColor ?? '#6366f1'}
+            value={color ?? '#1d9bf0'}
             onChange={(e) => onChange({ kind: 'solid', color: e.target.value })}
           />
         </label>
       </div>
+      <input
+        ref={fileInput}
+        type="file"
+        accept="image/*"
+        hidden
+        onChange={(e) => {
+          const file = e.target.files?.[0]
+          e.target.value = ''
+          if (file) void upload(file)
+        }}
+      />
     </div>
   )
 }
