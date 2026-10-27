@@ -8,6 +8,7 @@ import type {
   ScreenAccess,
   Settings,
   ToolId,
+  XAccount,
 } from '../shared/tools'
 
 type Kind = 'image' | 'video'
@@ -37,6 +38,8 @@ const api = {
     openScreenSettings: (): void => ipcRenderer.send('permissions:open-screen-settings'),
     // Adds Xssential to the Screen Recording list and opens System Settings there
     request: (): Promise<void> => ipcRenderer.invoke('permissions:request-screen'),
+    // Clears a stale Screen Recording entry, then adds a fresh one to switch on
+    reset: (): Promise<void> => ipcRenderer.invoke('permissions:reset-screen'),
     openSetup: (tool?: ToolId): void => ipcRenderer.send('permissions:open-setup', tool ?? null),
     restart: (): void => ipcRenderer.send('permissions:restart'),
     continueAnyway: (tool: ToolId | null): void => ipcRenderer.send('permissions:continue', tool),
@@ -91,6 +94,14 @@ const api = {
     writeImage: (png: Uint8Array): Promise<void> =>
       ipcRenderer.invoke('clipboard:write-image', png),
     readImage: (): Promise<Uint8Array | null> => ipcRenderer.invoke('clipboard:read-image'),
+  },
+
+  x: {
+    account: (): Promise<XAccount> => ipcRenderer.invoke('x:account'),
+    signIn: (): Promise<XAccount> => ipcRenderer.invoke('x:sign-in'),
+    signOut: (): Promise<void> => ipcRenderer.invoke('x:sign-out'),
+    // Opens X's composer with the image attached; resolves when that window closes
+    post: (jpeg: Uint8Array): Promise<'posted' | 'closed'> => ipcRenderer.invoke('x:post', jpeg),
   },
 
   recorder: {

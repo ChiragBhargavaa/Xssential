@@ -1,3 +1,4 @@
+import { execFile } from 'node:child_process'
 import { app, BrowserWindow, desktopCapturer, shell, systemPreferences } from 'electron'
 import type { ScreenAccess, ToolId } from '../shared/tools'
 import { getSettings, updateSettings } from './settings'
@@ -8,6 +9,8 @@ import { createAppWindow } from './windows'
 // restarts itself once access is turned on and then reopens the tool they picked.
 
 const isMac = process.platform === 'darwin'
+// Matches appId in electron-builder.yml
+const BUNDLE_ID = 'io.github.chiragbhargavaa.xssential'
 // How long a picked tool waits to be reopened after a restart
 const RESUME_FOR_MS = 15 * 60 * 1000
 
@@ -15,6 +18,8 @@ let setup: BrowserWindow | null = null
 let setupTool: ToolId | null = null
 // Lets the user carry on when macOS reports the permission wrongly
 let bypassUntil = 0
+// Set when the user quits from Xssential's own menus or Xssential restarts itself
+let expectedQuit = false
 
 export function screenAccess(): ScreenAccess {
   if (!isMac) return 'granted'
@@ -42,6 +47,20 @@ export async function requestScreenAccess(): Promise<void> {
       .catch(() => {})
   }
   openScreenSettings()
+}
+
+// macOS keeps one Screen Recording entry per app. After an update it can show Xssential as
+// switched on while still denying the new version, and flipping the switch doesn't help.
+// Clearing the entry and asking again gives a fresh switch to turn on.
+export async function resetScreenAccess(): Promise<void> {
+  if (!isMac || !app.isPackaged) return
+  await new Promise<void>((resolve) => {
+    execFile('/usr/bin/tccutil', ['reset', 'ScreenCapture', BUNDLE_ID], (err) => {
+      if (err) console.error('Could not reset the screen recording permission', err)
+      resolve()
+    })
+  })
+  await requestScreenAccess()
 }
 
 export function openSetup(tool: ToolId | null): void {
@@ -100,7 +119,19 @@ export function clearResume(): void {
   if (getSettings().resume) void updateSettings({ resume: null })
 }
 
+export function quitApp(): void {
+  expectedQuit = true
+  app.quit()
+}
+
+// macOS's "Quit & Reopen" doesn't always reopen the app. Any quit Xssential didn't ask for
+// while the user is setting up the permission is most likely that, so it comes back.
+export function reopenIfSettingUp(): void {
+  if (isMac && !expectedQuit && pendingResume()) app.relaunch()
+}
+
 export function restartApp(): void {
+  expectedQuit = true
   app.relaunch()
   app.quit()
   // Don't hang if a window holds up quitting

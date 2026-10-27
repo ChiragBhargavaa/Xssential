@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState, type ReactNode } from 'react'
-import { Check, Loader2, MonitorUp, RotateCw, ShieldCheck, Terminal } from 'lucide-react'
+import { Check, Loader2, MonitorUp, RotateCcw, RotateCw, ShieldCheck, Terminal } from 'lucide-react'
 import { TOOLS, type AppInfo, type ScreenAccess, type ToolId } from '../../../shared/tools'
 import { Button, TitleBar } from '../components/ui'
 import type { RouteProps } from '../main'
@@ -50,6 +50,7 @@ export default function Setup({ params }: RouteProps) {
   const [info, setInfo] = useState<AppInfo | null>(null)
   const [opened, setOpened] = useState(false)
   const [restarting, setRestarting] = useState(false)
+  const [resetting, setResetting] = useState(false)
   const restartTimer = useRef<number | null>(null)
 
   useEffect(() => {
@@ -79,6 +80,13 @@ export default function Setup({ params }: RouteProps) {
 
   const openSettings = async () => {
     await window.api.permissions.request()
+    setOpened(true)
+  }
+
+  const resetPermission = async () => {
+    setResetting(true)
+    await window.api.permissions.reset()
+    setResetting(false)
     setOpened(true)
   }
 
@@ -150,9 +158,27 @@ export default function Setup({ params }: RouteProps) {
                   This adds {appName} to the list under Privacy & Security → Screen & System Audio
                   Recording. If macOS shows its own prompt, choose Open System Settings there too.
                 </Step>
-                <Step n={2} title={`Switch on ${appName}`} done={access === 'granted'}>
+                <Step
+                  n={2}
+                  title={`Switch on ${appName}`}
+                  done={access === 'granted'}
+                  action={
+                    !dev && (
+                      <Button
+                        variant="secondary"
+                        icon={RotateCcw}
+                        loading={resetting}
+                        onClick={resetPermission}
+                      >
+                        Reset permission
+                      </Button>
+                    )
+                  }
+                >
                   Turn on the switch next to {appName}. If it isn’t in the list, click + and add it
                   from {dev ? 'Applications → Utilities' : 'Applications'}.
+                  {!dev &&
+                    ' Already switched on? macOS is still holding the permission for an older copy of Xssential. Reset it here, then switch Xssential on again.'}
                 </Step>
                 {!dev && (
                   <Step

@@ -6,6 +6,7 @@ interface TrayActions {
   launch: (tool: ToolId) => void
   openWheel: () => void
   stopRecording: () => void
+  quit: () => void
 }
 
 const isMac = process.platform === 'darwin'
@@ -37,7 +38,7 @@ function idleMenu(): Menu {
     ...toolItems,
     { type: 'separator' },
     { label: 'Settings…', click: () => actions.launch('settings') },
-    { label: 'Quit Xssential', role: 'quit' },
+    { label: 'Quit Xssential', click: () => actions.quit() },
   ])
 }
 

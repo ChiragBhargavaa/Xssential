@@ -13,7 +13,10 @@ import {
   openScreenSettings,
   openSetup,
   pendingResume,
+  quitApp,
+  reopenIfSettingUp,
   requestScreenAccess,
+  resetScreenAccess,
   restartApp,
   screenAccess,
 } from './permissions'
@@ -22,6 +25,7 @@ import { getSettings, updateSettings } from './settings'
 import { createTray, setTrayRecording, updateTrayShortcut } from './tray'
 import { hideWheel, prepareWheel, toggleWheel } from './wheel'
 import { allAppWindows, createAppWindow, hasVisibleAppWindows } from './windows'
+import { guardXContents, isXContents, registerXIpc } from './x'
 
 const isMac = process.platform === 'darwin'
 
@@ -148,7 +152,7 @@ function setApplicationMenu() {
           { role: 'hideOthers' },
           { role: 'unhide' },
           { type: 'separator' },
-          { role: 'quit' },
+          { label: `Quit ${app.name}`, accelerator: 'Command+Q', click: quitApp },
         ],
       },
       { label: 'File', submenu: [{ role: 'close' }] },
@@ -202,6 +206,7 @@ function registerAppIpc() {
   ipcMain.handle('permissions:screen', () => screenAccess())
   ipcMain.on('permissions:open-screen-settings', () => openScreenSettings())
   ipcMain.handle('permissions:request-screen', () => requestScreenAccess())
+  ipcMain.handle('permissions:reset-screen', () => resetScreenAccess())
   ipcMain.on('permissions:open-setup', (_e, tool: ToolId | null) => {
     openSetup(tool && TOOLS.some((t) => t.id === tool) ? tool : null)
   })
@@ -229,7 +234,12 @@ function registerAppIpc() {
 if (!app.requestSingleInstanceLock()) {
   app.quit()
 } else {
-  app.on('second-instance', openHome)
+  const startedAt = Date.now()
+  app.on('second-instance', () => {
+    // After "Quit & Reopen" both macOS and Xssential may reopen the app. The extra launch
+    // arrives within moments and shouldn't pop up the home window.
+    if (Date.now() - startedAt > 5000) openHome()
+  })
 
   app.whenReady().then(() => {
     electronApp.setAppUserModelId('io.github.chiragbhargavaa.xssential')
@@ -242,6 +252,7 @@ if (!app.requestSingleInstanceLock()) {
     registerAppIpc()
     registerFileIpc()
     registerMusicIpc()
+    registerXIpc()
     registerCaptureIpc((png) => openImageEditor(png))
     registerRecorderIpc({
       onStart: () => setTrayRecording(true),
@@ -250,7 +261,7 @@ if (!app.requestSingleInstanceLock()) {
 
     const settings = getSettings()
     createTray(
-      { launch, openWheel: toggleWheel, stopRecording: requestStopRecording },
+      { launch, openWheel: toggleWheel, stopRecording: requestStopRecording, quit: quitApp },
       settings.shortcut,
     )
     if (!registerShortcut(settings.shortcut)) {
@@ -292,6 +303,10 @@ if (!app.requestSingleInstanceLock()) {
   })
 
   app.on('web-contents-created', (_, contents) => {
+    if (isXContents(contents)) {
+      guardXContents(contents)
+      return
+    }
     // Links (such as music credits) open in the browser, never inside the app
     contents.setWindowOpenHandler(({ url }) => {
       if (url.startsWith('https://')) shell.openExternal(url)
@@ -315,5 +330,8 @@ if (!app.requestSingleInstanceLock()) {
   // Xssential keeps running in the menu bar / notification area after its windows close
   app.on('window-all-closed', () => {})
 
-  app.on('will-quit', () => globalShortcut.unregisterAll())
+  app.on('will-quit', () => {
+    globalShortcut.unregisterAll()
+    reopenIfSettingUp()
+  })
 }

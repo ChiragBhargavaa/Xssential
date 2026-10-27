@@ -1,15 +1,15 @@
 import type { StageMode } from '../components/Stage'
-import type { Composition } from './composition'
+import type { Composition, FramePreset } from './composition'
 import { defaultComposition, photoBackground } from './presets'
 import { isTextInput } from './utils'
 
 type StyleKeys = 'frame' | 'padding' | 'radius' | 'shadow' | 'background'
 
 // The last used look (size, background, padding...) is remembered per editor, so a brand
-// style only has to be set up once. Uploaded images are blob URLs and can't be kept; the
-// built-in photos are.
-export function loadStyle(key: string, fallbackFrame = 'auto'): Composition {
-  const base = defaultComposition(fallbackFrame)
+// style only has to be set up once. Uploaded images are blob URLs and can't be kept (the
+// built-in photos are), and a size the editor no longer offers falls back to its first one.
+export function loadStyle(key: string, frames: FramePreset[]): Composition {
+  const base = defaultComposition(frames[0]!.id)
   try {
     const saved = JSON.parse(localStorage.getItem(key) ?? 'null') as Partial<Composition> | null
     if (!saved) return base
@@ -17,6 +17,7 @@ export function loadStyle(key: string, fallbackFrame = 'auto'): Composition {
     if (style.background.kind === 'image') {
       style.background = photoBackground(style.background.photo) ?? base.background
     }
+    if (!frames.some((f) => f.id === style.frame)) style.frame = base.frame
     return style
   } catch {
     return base

@@ -160,7 +160,7 @@ export function FramePicker({
   const size = current.width ? current : autoSize
   return (
     <div>
-      <div className="grid grid-cols-3 gap-1.5">
+      <div className={cx('grid gap-1.5', frames.length === 2 ? 'grid-cols-2' : 'grid-cols-3')}>
         {frames.map((f) => {
           const active = f.id === current.id
           return (

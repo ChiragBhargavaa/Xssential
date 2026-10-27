@@ -266,6 +266,15 @@ export function TitleBar({ children, className }: { children?: ReactNode; classN
   )
 }
 
+// X's logo, for buttons that post to X
+export function XLogo({ className }: { className?: string }) {
+  return (
+    <svg viewBox="0 0 24 24" aria-hidden="true" fill="currentColor" className={className}>
+      <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z" />
+    </svg>
+  )
+}
+
 export const ToolbarDivider = () => <div className="mx-1.5 h-5 w-px bg-neutral-200" />
 
 export function ProgressBar({ value }: { value: number }) {

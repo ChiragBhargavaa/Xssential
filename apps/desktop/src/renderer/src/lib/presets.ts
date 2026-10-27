@@ -1,32 +1,16 @@
 import type { Background, Composition, FramePreset } from './composition'
 
-// Canvas sizes for X posts. Sources: X's media best practices (docs.x.com: up to 4 images
-// of 5 MB each per post; video 1:3–3:1, 30/60 fps, H.264 High + AAC) and X's 2021 change
-// that shows single 3:4 to 2:1 images uncropped in the timeline.
+// Canvas sizes for screenshots on X. A 16:9 image looks the same on the web and on phones;
+// a 4:5 one shows in full on phones and takes up more of the timeline. Up to 4 images of
+// 5 MB each per post (X's media best practices, docs.x.com).
 export const IMAGE_FRAMES: FramePreset[] = [
-  {
-    id: 'auto',
-    label: 'Auto',
-    ratio: 'Fit',
-    width: 0,
-    height: 0,
-    note: 'Canvas follows the image.',
-  },
   {
     id: 'x-landscape',
     label: 'Landscape',
     ratio: '16:9',
     width: 1600,
     height: 900,
-    note: 'The classic single-image post. Shows uncropped everywhere.',
-  },
-  {
-    id: 'x-square',
-    label: 'Square',
-    ratio: '1:1',
-    width: 1200,
-    height: 1200,
-    note: 'Safe for single and multi-image posts.',
+    note: 'Looks the same on the web and on phones.',
   },
   {
     id: 'x-portrait',
@@ -34,31 +18,7 @@ export const IMAGE_FRAMES: FramePreset[] = [
     ratio: '4:5',
     width: 1080,
     height: 1350,
-    note: 'Fills more of the mobile timeline.',
-  },
-  {
-    id: 'x-tall',
-    label: 'Tall',
-    ratio: '3:4',
-    width: 1080,
-    height: 1440,
-    note: 'Tallest shape X shows in full.',
-  },
-  {
-    id: 'x-wide',
-    label: 'Wide',
-    ratio: '2:1',
-    width: 1600,
-    height: 800,
-    note: 'Widest shape X shows in full on mobile.',
-  },
-  {
-    id: 'x-header',
-    label: 'Header',
-    ratio: '3:1',
-    width: 1500,
-    height: 500,
-    note: 'Profile header image.',
+    note: 'Shows in full on phones and takes up more of the timeline.',
   },
 ]
 

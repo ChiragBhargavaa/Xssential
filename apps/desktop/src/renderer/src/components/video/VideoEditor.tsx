@@ -92,7 +92,7 @@ export function VideoEditor({
 }) {
   const { info } = clip
   const history = useHistory<VideoDoc>(() => ({
-    comp: loadStyle(STYLE_KEY),
+    comp: loadStyle(STYLE_KEY, VIDEO_FRAMES),
     start: 0,
     end: info.duration,
   }))

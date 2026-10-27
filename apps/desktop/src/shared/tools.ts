@@ -18,6 +18,13 @@ export interface Settings {
   onboarded: boolean
   // A tool to reopen after Xssential restarts for the screen recording permission
   resume: { tool: ToolId; at: number } | null
+  // The X username last signed in with, shown next to "Post on X"
+  xHandle: string | null
+}
+
+export interface XAccount {
+  signedIn: boolean
+  handle: string | null
 }
 
 export interface AppInfo {

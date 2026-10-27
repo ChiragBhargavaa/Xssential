@@ -9,6 +9,7 @@ const defaults: Settings = {
   launchAtLogin: false,
   onboarded: false,
   resume: null,
+  xHandle: null,
 }
 
 let current: Settings | null = null

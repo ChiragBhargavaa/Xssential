@@ -15,7 +15,7 @@ import {
 import { DropOverlay, EmptyState, useFileDrop } from '../components/EmptyState'
 import { RedactionSection, StyleSections, type RedactionDefaults } from '../components/Inspector'
 import { Stage, type StageMode } from '../components/Stage'
-import { Button, IconButton, Section, Segmented, TitleBar, ToolbarDivider } from '../components/ui'
+import { Button, IconButton, Section, TitleBar, ToolbarDivider, XLogo } from '../components/ui'
 import { computeLayout, renderToBlob, type Composition } from '../lib/composition'
 import { handleEditorKey, loadStyle, saveStyle } from '../lib/editor'
 import { useBitmap, useHistory, useKeydown, useWindowEvent } from '../lib/hooks'
@@ -29,21 +29,22 @@ import {
   modKey,
   timestampName,
 } from '../lib/utils'
+import { useXAccount } from '../lib/x'
 
 const STYLE_KEY = 'xssential.image-style.v2'
 
-type Format = 'png' | 'jpeg'
-
 export default function ImageEditor() {
   const [image, setImage] = useState<ImageBitmap | null>(null)
-  const history = useHistory<Composition>(() => loadStyle(STYLE_KEY))
+  const history = useHistory<Composition>(() => loadStyle(STYLE_KEY, IMAGE_FRAMES))
   const { reset } = history
   const comp = history.value
   const [mode, setMode] = useState<StageMode>('select')
   const [selectedId, setSelectedId] = useState<string | null>(null)
   const [defaults, setDefaults] = useState<RedactionDefaults>({ strength: 60 })
-  const [format, setFormat] = useState<Format>('png')
   const [busy, setBusy] = useState<'copy' | 'save' | null>(null)
+  // True while X's composer (or its sign-in page) is open
+  const [posting, setPosting] = useState(false)
+  const [xAccount, refreshXAccount] = useXAccount()
   const busyRef = useRef(false)
   const fileInput = useRef<HTMLInputElement>(null)
   const backgroundImage = useBitmap(comp.background.kind === 'image' ? comp.background.url : null)
@@ -105,7 +106,7 @@ export default function ImageEditor() {
       await window.api.clipboard.writeImage(await blobToBytes(blob))
       toast(
         blob.size > X_IMAGE_LIMIT
-          ? `Copied (${formatBytes(blob.size)}). X may reject images over 5 MB; save as JPEG instead.`
+          ? `Copied (${formatBytes(blob.size)}). X may reject images over 5 MB; download it as a JPEG instead.`
           : 'Copied. Paste it straight into a post.',
         { tone: blob.size > X_IMAGE_LIMIT ? 'warning' : 'success' },
       )
@@ -114,26 +115,48 @@ export default function ImageEditor() {
   const save = () =>
     run('save', async () => {
       if (!image || !layout) return
-      const blob = await renderToBlob(image, layout, comp, format, backgroundImage)
-      const ext = format === 'png' ? 'png' : 'jpg'
+      const blob = await renderToBlob(image, layout, comp, 'jpeg', backgroundImage)
       const path = await window.api.files.save({
         data: await blobToBytes(blob),
-        name: timestampName('Xssential', ext),
+        name: timestampName('Xssential', 'jpg'),
         kind: 'image',
-        filters: [{ name: format === 'png' ? 'PNG image' : 'JPEG image', extensions: [ext] }],
+        filters: [{ name: 'JPEG image', extensions: ['jpg'] }],
       })
       if (!path) return
       if (blob.size > X_IMAGE_LIMIT) {
-        toast(
-          `Saved, but it is ${formatBytes(blob.size)}. X accepts images up to 5 MB; try JPEG.`,
-          {
-            tone: 'warning',
-          },
-        )
+        toast(`Saved, but it is ${formatBytes(blob.size)}. X accepts images up to 5 MB.`, {
+          tone: 'warning',
+        })
       } else {
         savedToast(path, ` (${formatBytes(blob.size)})`)
       }
     })
+
+  const postToX = async () => {
+    if (!image || !layout || posting) return
+    setPosting(true)
+    try {
+      const blob = await renderToBlob(image, layout, comp, 'jpeg', backgroundImage)
+      const result = await window.api.x.post(await blobToBytes(blob))
+      if (result === 'posted') toast('Posted to X.', { tone: 'success' })
+    } catch (err) {
+      toast(errorMessage(err), { tone: 'error' })
+    } finally {
+      setPosting(false)
+      refreshXAccount()
+    }
+  }
+
+  const signInToX = async () => {
+    await window.api.x.signIn()
+    refreshXAccount()
+  }
+
+  const signOutOfX = async () => {
+    await window.api.x.signOut()
+    refreshXAccount()
+    toast('Signed out of X.')
+  }
 
   const deleteSelected = () => {
     if (!selectedId) return
@@ -287,18 +310,6 @@ export default function ImageEditor() {
         <span className="mr-2 text-xs text-neutral-600 tabular-nums">
           {layout.width} × {layout.height}
         </span>
-        <Button icon={Copy} loading={busy === 'copy'} onClick={copy} title={`Copy (${modKey}C)`}>
-          Copy
-        </Button>
-        <Button
-          variant="primary"
-          icon={Download}
-          loading={busy === 'save'}
-          onClick={save}
-          title={`Save (${modKey}S)`}
-        >
-          Save
-        </Button>
       </TitleBar>
 
       <div className="flex min-h-0 flex-1">
@@ -319,32 +330,75 @@ export default function ImageEditor() {
           />
         </div>
 
-        <aside className="w-80 shrink-0 overflow-y-auto border-l border-neutral-100 bg-white">
-          <StyleSections
-            comp={comp}
-            update={history.update}
-            frames={IMAGE_FRAMES}
-            autoSize={layout}
-          />
-          <RedactionSection
-            comp={comp}
-            update={history.update}
-            selectedId={selectedId}
-            onSelect={setSelectedId}
-            defaults={defaults}
-            onDefaultsChange={setDefaults}
-          />
-          <Section title="Export">
-            <Segmented
-              value={format}
-              onChange={setFormat}
-              options={[
-                { value: 'png', label: 'PNG' },
-                { value: 'jpeg', label: 'JPEG' },
-              ]}
+        <aside className="flex w-80 shrink-0 flex-col border-l border-neutral-100 bg-white">
+          <div className="min-h-0 flex-1 overflow-y-auto">
+            <StyleSections
+              comp={comp}
+              update={history.update}
+              frames={IMAGE_FRAMES}
+              autoSize={layout}
             />
+            <RedactionSection
+              comp={comp}
+              update={history.update}
+              selectedId={selectedId}
+              onSelect={setSelectedId}
+              defaults={defaults}
+              onDefaultsChange={setDefaults}
+            />
+          </div>
+          {/* Pinned below the scrolling settings so the image can always be sent off */}
+          <Section title="Export" className="border-t">
+            <div className="grid grid-cols-2 gap-2">
+              <Button
+                icon={Download}
+                loading={busy === 'save'}
+                onClick={save}
+                title={`Download as JPEG (${modKey}S)`}
+              >
+                Download
+              </Button>
+              <Button
+                icon={Copy}
+                loading={busy === 'copy'}
+                onClick={copy}
+                title={`Copy to the clipboard (${modKey}C)`}
+              >
+                Copy
+              </Button>
+            </div>
+            <Button variant="primary" loading={posting} onClick={postToX} className="mt-2 w-full">
+              {!posting && <XLogo className="size-3.5" />}
+              Post on X
+            </Button>
             <p className="mt-2.5 text-xs leading-relaxed text-neutral-600">
-              PNG keeps text sharp. JPEG makes smaller files; X accepts images up to 5 MB.
+              {xAccount?.signedIn ? (
+                <>
+                  Posting as{' '}
+                  <span className="font-bold text-neutral-900">
+                    {xAccount.handle ? `@${xAccount.handle}` : 'your X account'}
+                  </span>{' '}
+                  ·{' '}
+                  <button
+                    type="button"
+                    onClick={signOutOfX}
+                    className="font-bold text-neutral-900 hover:underline"
+                  >
+                    Sign out
+                  </button>
+                </>
+              ) : (
+                <>
+                  <button
+                    type="button"
+                    onClick={signInToX}
+                    className="font-bold text-neutral-900 hover:underline"
+                  >
+                    Sign in to X
+                  </button>{' '}
+                  to post. You sign in on X&apos;s own page, so Xssential never sees your password.
+                </>
+              )}
             </p>
           </Section>
         </aside>
