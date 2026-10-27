@@ -141,6 +141,54 @@ export const SOLIDS = [
   '#00ba7c',
 ]
 
+export interface Photo {
+  id: string
+  author: string
+  url: string
+  // Small copy shown in the picker
+  thumb: string
+}
+
+// Abstract backgrounds from Unsplash, free to use under the Unsplash License. The
+// photographers are thanked in README.md.
+const photoUrls = import.meta.glob<string>('../assets/backgrounds/*.webp', {
+  eager: true,
+  import: 'default',
+})
+const thumbUrls = import.meta.glob<string>('../assets/backgrounds/thumbs/*.webp', {
+  eager: true,
+  import: 'default',
+})
+
+const photo = (id: string, author: string): Photo => ({
+  id,
+  author,
+  url: photoUrls[`../assets/backgrounds/${id}.webp`]!,
+  thumb: thumbUrls[`../assets/backgrounds/thumbs/${id}.webp`]!,
+})
+
+export const PHOTOS: Photo[] = [
+  photo('blush', 'Allison Saeng'),
+  photo('violet', 'Mohammed Kara'),
+  photo('indigo', 'MagicPattern'),
+  photo('aurora', 'Milad Fakurian'),
+  photo('prism', 'Codioful'),
+  photo('crimson', 'MagicPattern'),
+  photo('ember', 'Antonius Harel'),
+  photo('rust', 'Josiah Rock'),
+  photo('silk', 'Universtock'),
+  photo('dusk', 'Mohammad Alizade'),
+  photo('forest', 'Kunal Patil'),
+  photo('lagoon', 'Ikhlas'),
+  photo('glacier', 'Zaky Jundana'),
+]
+
+// Built-in photos are remembered by id, since their URLs change between builds
+export function photoBackground(id: string | undefined): Background | null {
+  const p = PHOTOS.find((p) => p.id === id)
+  return p ? { kind: 'image', url: p.url, photo: p.id } : null
+}
+
 const defaultGradient = GRADIENTS[0]!
 
 export const DEFAULT_BACKGROUND: Background = {

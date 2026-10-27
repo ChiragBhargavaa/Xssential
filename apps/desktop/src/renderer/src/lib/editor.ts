@@ -1,19 +1,22 @@
 import type { StageMode } from '../components/Stage'
 import type { Composition } from './composition'
-import { defaultComposition } from './presets'
+import { defaultComposition, photoBackground } from './presets'
 import { isTextInput } from './utils'
 
 type StyleKeys = 'frame' | 'padding' | 'radius' | 'shadow' | 'background'
 
 // The last used look (size, background, padding...) is remembered per editor, so a brand
-// style only has to be set up once. Image backgrounds are blob URLs and can't be kept.
+// style only has to be set up once. Uploaded images are blob URLs and can't be kept; the
+// built-in photos are.
 export function loadStyle(key: string, fallbackFrame = 'auto'): Composition {
   const base = defaultComposition(fallbackFrame)
   try {
     const saved = JSON.parse(localStorage.getItem(key) ?? 'null') as Partial<Composition> | null
     if (!saved) return base
     const style = { ...base, ...pickStyle(saved as Composition) }
-    if (style.background.kind === 'image') style.background = base.background
+    if (style.background.kind === 'image') {
+      style.background = photoBackground(style.background.photo) ?? base.background
+    }
     return style
   } catch {
     return base

@@ -23,7 +23,8 @@ export type Background =
   | { kind: 'none' }
   | { kind: 'solid'; color: string }
   | { kind: 'gradient'; stops: string[]; angle: number }
-  | { kind: 'image'; url: string }
+  // `photo` is the id of a built-in photo; uploaded images only have a blob URL
+  | { kind: 'image'; url: string; photo?: string }
 
 export interface Composition {
   crop: Rect | null

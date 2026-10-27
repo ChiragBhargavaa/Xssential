@@ -132,6 +132,28 @@ The site is a static export (`apps/web/out`), so it can be hosted anywhere:
 - **GitHub Pages:** go to _Settings → Pages_ and set **Source** to **GitHub Actions**. `pages.yml` deploys on every push to `main` that touches `apps/web`.
 - **Vercel / Netlify / Cloudflare Pages:** set the root directory to `apps/web`, the build command to `pnpm build` and the output directory to `out`.
 
+## Thanks
+
+The photo backgrounds in the screenshot and video editors are free photos from
+[Unsplash](https://unsplash.com), used under the [Unsplash License](https://unsplash.com/license).
+Thank you to the photographers who share their work:
+
+| Background | Photographer                                                    | Photo                                                                     |
+| ---------- | --------------------------------------------------------------- | ------------------------------------------------------------------------- |
+| Blush      | [Allison Saeng](https://unsplash.com/@allisonsaeng)             | [Pink and purple blur](https://unsplash.com/photos/ecwIyHRmThI)           |
+| Violet     | [Mohammed Kara](https://unsplash.com/@sharkx7)                  | [Purple and white gradient](https://unsplash.com/photos/ojW42O2Hpec)      |
+| Indigo     | [MagicPattern](https://unsplash.com/@magicpattern)              | [Purple and blue blur](https://unsplash.com/photos/8h_tctpq4h0)           |
+| Aurora     | [Milad Fakurian](https://unsplash.com/@fakurian)                | [Purple and pink gradient waves](https://unsplash.com/photos/nY14Fs8pxT8) |
+| Prism      | [Codioful (formerly Gradienta)](https://unsplash.com/@codioful) | [Purple and pink light](https://unsplash.com/photos/O10vBIDRkZw)          |
+| Crimson    | [MagicPattern](https://unsplash.com/@magicpattern)              | [Red and black blur](https://unsplash.com/photos/iAR6yhCkrxc)             |
+| Ember      | [Antonius Harel](https://unsplash.com/@antoniushareel)          | [Warm orange and white gradient](https://unsplash.com/photos/WsaPcg512jE) |
+| Rust       | [Josiah Rock](https://unsplash.com/@josiahrock)                 | [Orange, blue and brown blend](https://unsplash.com/photos/7EnvCCL8XGE)   |
+| Silk       | [Universtock](https://unsplash.com/@universtock)                | [Orange and blue fluid](https://unsplash.com/photos/spmU0phaFDc)          |
+| Dusk       | [Mohammad Alizade](https://unsplash.com/@mohamadaz)             | [Sunset over water](https://unsplash.com/photos/SB5MIXFjJxs)              |
+| Forest     | [Kunal Patil](https://unsplash.com/@kunalptll)                  | [Green blur](https://unsplash.com/photos/2hB-jhXLd3c)                     |
+| Lagoon     | [Ikhlas](https://unsplash.com/@byikhlas)                        | [Blue and white blur](https://unsplash.com/photos/u_WdZULW1Go)            |
+| Glacier    | [Zaky Jundana](https://unsplash.com/@zakyjundanaphotos)         | [Blue and white gradient](https://unsplash.com/photos/6grFyaQVt24)        |
+
 ## Contributing
 
 Contributions are welcome. See [CONTRIBUTING.md](CONTRIBUTING.md).

@@ -1,7 +1,7 @@
 import { useRef } from 'react'
 import { ImagePlus } from 'lucide-react'
 import type { Background, FramePreset } from '../lib/composition'
-import { GRADIENTS, SOLIDS } from '../lib/presets'
+import { GRADIENTS, PHOTOS, SOLIDS } from '../lib/presets'
 import { cx } from '../lib/utils'
 
 const swatch =
@@ -26,81 +26,94 @@ export function BackgroundPicker({
 }) {
   const fileInput = useRef<HTMLInputElement>(null)
   const customColor = value.kind === 'solid' && !SOLIDS.includes(value.color) ? value.color : null
+  const uploaded = value.kind === 'image' && !value.photo ? value.url : null
 
   return (
-    <div className="flex flex-wrap gap-2">
-      <button
-        type="button"
-        title={noneLabel}
-        onClick={() => onChange({ kind: 'none' })}
-        className={cx(swatch, 'checkerboard', value.kind === 'none' && selected)}
-      />
-      {GRADIENTS.map((g) => (
+    <div className="flex flex-col gap-3">
+      <div className="flex flex-wrap gap-2">
         <button
-          key={g.id}
           type="button"
-          title={`Gradient: ${g.id}`}
-          onClick={() => onChange({ kind: 'gradient', stops: g.stops, angle: g.angle })}
-          className={cx(swatch, sameGradient(value, g.stops) && selected)}
-          style={{ background: gradientCss(g.stops, g.angle) }}
+          title={noneLabel}
+          onClick={() => onChange({ kind: 'none' })}
+          className={cx(swatch, 'checkerboard', value.kind === 'none' && selected)}
         />
-      ))}
-      {SOLIDS.map((color) => (
+        {GRADIENTS.map((g) => (
+          <button
+            key={g.id}
+            type="button"
+            title={`Gradient: ${g.id}`}
+            onClick={() => onChange({ kind: 'gradient', stops: g.stops, angle: g.angle })}
+            className={cx(swatch, sameGradient(value, g.stops) && selected)}
+            style={{ background: gradientCss(g.stops, g.angle) }}
+          />
+        ))}
+        {SOLIDS.map((color) => (
+          <button
+            key={color}
+            type="button"
+            title={color}
+            onClick={() => onChange({ kind: 'solid', color })}
+            className={cx(swatch, value.kind === 'solid' && value.color === color && selected)}
+            style={{ background: color }}
+          />
+        ))}
+        <label
+          title="Custom color"
+          className={cx(
+            swatch,
+            'relative cursor-pointer overflow-hidden',
+            customColor !== null && selected,
+          )}
+          style={{
+            background:
+              customColor ??
+              'conic-gradient(from 90deg, #f43f5e, #eab308, #22c55e, #06b6d4, #6366f1, #d946ef, #f43f5e)',
+          }}
+        >
+          <input
+            type="color"
+            className="absolute inset-0 cursor-pointer opacity-0"
+            value={customColor ?? '#6366f1'}
+            onChange={(e) => onChange({ kind: 'solid', color: e.target.value })}
+          />
+        </label>
+      </div>
+      <div className="flex flex-wrap gap-2">
+        {PHOTOS.map((p) => (
+          <button
+            key={p.id}
+            type="button"
+            title={`Photo by ${p.author} on Unsplash`}
+            onClick={() => onChange({ kind: 'image', url: p.url, photo: p.id })}
+            className={cx(swatch, value.kind === 'image' && value.photo === p.id && selected)}
+            style={{ background: `center / cover url(${p.thumb})` }}
+          />
+        ))}
         <button
-          key={color}
           type="button"
-          title={color}
-          onClick={() => onChange({ kind: 'solid', color })}
-          className={cx(swatch, value.kind === 'solid' && value.color === color && selected)}
-          style={{ background: color }}
-        />
-      ))}
-      <label
-        title="Custom color"
-        className={cx(
-          swatch,
-          'relative cursor-pointer overflow-hidden',
-          customColor !== null && selected,
-        )}
-        style={{
-          background:
-            customColor ??
-            'conic-gradient(from 90deg, #f43f5e, #eab308, #22c55e, #06b6d4, #6366f1, #d946ef, #f43f5e)',
-        }}
-      >
+          title="Use your own image"
+          onClick={() => fileInput.current?.click()}
+          className={cx(
+            swatch,
+            'flex items-center justify-center bg-neutral-100 text-neutral-800',
+            uploaded && selected,
+          )}
+          style={uploaded ? { background: `center / cover url(${uploaded})` } : undefined}
+        >
+          {!uploaded && <ImagePlus className="size-3.5" />}
+        </button>
         <input
-          type="color"
-          className="absolute inset-0 cursor-pointer opacity-0"
-          value={customColor ?? '#6366f1'}
-          onChange={(e) => onChange({ kind: 'solid', color: e.target.value })}
+          ref={fileInput}
+          type="file"
+          accept="image/*"
+          hidden
+          onChange={(e) => {
+            const file = e.target.files?.[0]
+            if (file) onChange({ kind: 'image', url: URL.createObjectURL(file) })
+            e.target.value = ''
+          }}
         />
-      </label>
-      <button
-        type="button"
-        title="Use an image"
-        onClick={() => fileInput.current?.click()}
-        className={cx(
-          swatch,
-          'flex items-center justify-center bg-neutral-100 text-neutral-800',
-          value.kind === 'image' && selected,
-        )}
-        style={
-          value.kind === 'image' ? { background: `center / cover url(${value.url})` } : undefined
-        }
-      >
-        {value.kind !== 'image' && <ImagePlus className="size-3.5" />}
-      </button>
-      <input
-        ref={fileInput}
-        type="file"
-        accept="image/*"
-        hidden
-        onChange={(e) => {
-          const file = e.target.files?.[0]
-          if (file) onChange({ kind: 'image', url: URL.createObjectURL(file) })
-          e.target.value = ''
-        }}
-      />
+      </div>
     </div>
   )
 }
