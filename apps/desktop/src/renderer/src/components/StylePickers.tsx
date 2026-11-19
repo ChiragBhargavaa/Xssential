@@ -1,5 +1,5 @@
 import { useRef } from 'react'
-import { ImagePlus } from 'lucide-react'
+import { Ban, ImagePlus } from 'lucide-react'
 import type { Background, FramePreset, ImageEffects } from '../lib/composition'
 import type { HistoryMode } from '../lib/hooks'
 import { DEFAULT_IMAGE_EFFECTS, PHOTOS } from '../lib/presets'
@@ -20,16 +20,25 @@ const option = (active: boolean) =>
       : 'bg-white text-neutral-600 ring-neutral-200 hover:bg-neutral-50 hover:text-neutral-900',
   )
 
+// `none` adds a "No background" button, which shows the source as it is
+export interface NoBackground {
+  active: boolean
+  onSelect: () => void
+}
+
 export function BackgroundPicker({
   value,
   onChange,
+  none,
 }: {
   value: Background
   onChange: (bg: Background, mode?: HistoryMode) => void
+  none?: NoBackground
 }) {
   const fileInput = useRef<HTMLInputElement>(null)
-  const color = value.kind === 'solid' ? value.color : null
-  const own = value.kind === 'image' && !value.photo ? value : null
+  const off = !!none?.active
+  const color = !off && value.kind === 'solid' ? value.color : null
+  const own = !off && value.kind === 'image' && !value.photo ? value : null
   const uploaded = own?.url ?? null
 
   const upload = async (file: File) => {
@@ -47,13 +56,31 @@ export function BackgroundPicker({
   return (
     <div className="flex flex-col gap-3">
       <div className="flex flex-wrap gap-2">
+        {none && (
+          <button
+            type="button"
+            title="No background"
+            aria-label="No background"
+            onClick={none.onSelect}
+            className={cx(
+              swatch,
+              'flex items-center justify-center bg-white text-neutral-600',
+              off && selected,
+            )}
+          >
+            <Ban className="size-4" />
+          </button>
+        )}
         {PHOTOS.map((p) => (
           <button
             key={p.id}
             type="button"
             title={`Photo by ${p.author} on Unsplash`}
             onClick={() => onChange({ kind: 'image', url: p.url, photo: p.id })}
-            className={cx(swatch, value.kind === 'image' && value.photo === p.id && selected)}
+            className={cx(
+              swatch,
+              !off && value.kind === 'image' && value.photo === p.id && selected,
+            )}
             style={{ background: `center / cover url(${p.thumb})` }}
           />
         ))}

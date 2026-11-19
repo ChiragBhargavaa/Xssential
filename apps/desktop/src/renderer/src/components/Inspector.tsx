@@ -2,7 +2,7 @@ import { Trash2 } from 'lucide-react'
 import type { Composition, FramePreset, Redaction } from '../lib/composition'
 import type { HistoryMode } from '../lib/hooks'
 import { formatTime, isMac } from '../lib/utils'
-import { BackgroundPicker, FramePicker } from './StylePickers'
+import { BackgroundPicker, FramePicker, type NoBackground } from './StylePickers'
 import { Button, Section, Slider, Toggle } from './ui'
 
 type Update = (fn: (c: Composition) => Composition, mode?: HistoryMode) => void
@@ -12,12 +12,25 @@ export function StyleSections({
   update,
   frames,
   autoSize,
+  none,
 }: {
   comp: Composition
   update: Update
   frames: FramePreset[]
   autoSize: { width: number; height: number }
+  none?: NoBackground
 }) {
+  const background = (
+    <Section title="Background">
+      <BackgroundPicker
+        value={comp.background}
+        onChange={(background, mode) => update((c) => ({ ...c, background }), mode)}
+        none={none}
+      />
+    </Section>
+  )
+  // Size and style only matter with a background
+  if (none?.active) return background
   return (
     <>
       <Section title="Size">
@@ -28,12 +41,7 @@ export function StyleSections({
           onChange={(frame) => update((c) => ({ ...c, frame }))}
         />
       </Section>
-      <Section title="Background">
-        <BackgroundPicker
-          value={comp.background}
-          onChange={(background, mode) => update((c) => ({ ...c, background }), mode)}
-        />
-      </Section>
+      {background}
       <Section title="Style">
         <div className="space-y-4">
           <Slider

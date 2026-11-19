@@ -472,29 +472,16 @@ export function VideoEditor({
         </div>
 
         <aside className="w-80 shrink-0 overflow-y-auto border-l border-neutral-100 bg-white">
-          <Section title="Look">
-            <Segmented
-              value={plain ? 'plain' : 'styled'}
-              onChange={(v) => setPlain(v === 'plain')}
-              options={[
-                { value: 'styled', label: 'With background' },
-                { value: 'plain', label: 'As recorded' },
-              ]}
-            />
-            <p className="mt-2.5 text-xs leading-relaxed text-neutral-600">
-              {plain
-                ? 'Saves and copies the screen recording as it is, with no frame, padding or background. Trimming, cropping and blurring still apply.'
-                : 'Places the video on a background with padding, rounded corners and a shadow.'}
-            </p>
-          </Section>
-          {!plain && (
-            <StyleSections
-              comp={doc.comp}
-              update={updateComp}
-              frames={VIDEO_FRAMES}
-              autoSize={layout}
-            />
-          )}
+          <StyleSections
+            comp={doc.comp}
+            update={(fn, m) => {
+              setPlain(false)
+              updateComp(fn, m)
+            }}
+            frames={VIDEO_FRAMES}
+            autoSize={layout}
+            none={{ active: plain, onSelect: () => setPlain(true) }}
+          />
           {/* Only shown while blurring, or with a blurred area selected */}
           {(mode === 'blur' || doc.comp.redactions.some((r) => r.id === selectedId)) && (
             <RedactionSection
