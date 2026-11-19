@@ -41,6 +41,15 @@ import { MusicPanel, type LoadedMusic, type MusicSettings } from './MusicPanel'
 import { Timeline } from './Timeline'
 
 const STYLE_KEY = 'xssential.video-style.v2'
+const PLAIN_KEY = 'xssential.video-plain'
+
+function loadPlain(): boolean {
+  try {
+    return localStorage.getItem(PLAIN_KEY) === '1'
+  } catch {
+    return false
+  }
+}
 
 export interface Clip {
   file: Blob
@@ -132,8 +141,16 @@ export function VideoEditor({
     fade: true,
   })
   const [fps, setFps] = useState<'30' | '60'>(info.fps >= 50 ? '60' : '30')
-  // Saves just the edited video, without the frame, padding and background
-  const [plain, setPlain] = useState(false)
+  // "As recorded": just the edited video, without the frame, padding and background,
+  // in the preview as well as in what is saved or copied
+  const [plain, setPlain] = useState(loadPlain)
+  useEffect(() => {
+    try {
+      localStorage.setItem(PLAIN_KEY, plain ? '1' : '0')
+    } catch {
+      // Not remembered, which is fine
+    }
+  }, [plain])
   const [exporting, setExporting] = useState<{
     kind: 'save' | 'copy'
     progress: number
@@ -150,7 +167,7 @@ export function VideoEditor({
   )
 
   const backgroundImage = useBitmap(
-    doc.comp.background.kind === 'image' ? doc.comp.background.url : null,
+    !plain && doc.comp.background.kind === 'image' ? doc.comp.background.url : null,
   )
   const thumbnails = useThumbnails(clip.file, info.duration)
   const layout = exportLayout({ comp: doc.comp, info })
@@ -428,7 +445,7 @@ export function VideoEditor({
             source={ready ? videoRef.current : null}
             width={info.width}
             height={info.height}
-            comp={doc.comp}
+            comp={outputComp}
             frames={VIDEO_FRAMES}
             limits={VIDEO_LIMITS}
             mode={mode}
@@ -436,7 +453,7 @@ export function VideoEditor({
             update={updateComp}
             selectedId={selectedId}
             onSelect={setSelectedId}
-            backgroundImage={backgroundImage}
+            backgroundImage={plain ? null : backgroundImage}
             time={time}
             opaque="#000000"
             newRedaction={defaults}
@@ -455,12 +472,29 @@ export function VideoEditor({
         </div>
 
         <aside className="w-80 shrink-0 overflow-y-auto border-l border-neutral-100 bg-white">
-          <StyleSections
-            comp={doc.comp}
-            update={updateComp}
-            frames={VIDEO_FRAMES}
-            autoSize={layout}
-          />
+          <Section title="Look">
+            <Segmented
+              value={plain ? 'plain' : 'styled'}
+              onChange={(v) => setPlain(v === 'plain')}
+              options={[
+                { value: 'styled', label: 'With background' },
+                { value: 'plain', label: 'As recorded' },
+              ]}
+            />
+            <p className="mt-2.5 text-xs leading-relaxed text-neutral-600">
+              {plain
+                ? 'Saves and copies the screen recording as it is, with no frame, padding or background. Trimming, cropping and blurring still apply.'
+                : 'Places the video on a background with padding, rounded corners and a shadow.'}
+            </p>
+          </Section>
+          {!plain && (
+            <StyleSections
+              comp={doc.comp}
+              update={updateComp}
+              frames={VIDEO_FRAMES}
+              autoSize={layout}
+            />
+          )}
           {/* Only shown while blurring, or with a blurred area selected */}
           {(mode === 'blur' || doc.comp.redactions.some((r) => r.id === selectedId)) && (
             <RedactionSection
@@ -507,13 +541,7 @@ export function VideoEditor({
             />
           </Section>
           <Section title="Save and copy">
-            <Toggle
-              label="Without background"
-              description="Just the video, trimmed, cropped and blurred, with no frame, padding or background."
-              checked={plain}
-              onChange={setPlain}
-            />
-            <div className="mt-4 mb-1.5 text-xs text-neutral-800">Frame rate</div>
+            <div className="mb-1.5 text-xs text-neutral-800">Frame rate</div>
             <Segmented
               value={fps}
               onChange={setFps}
