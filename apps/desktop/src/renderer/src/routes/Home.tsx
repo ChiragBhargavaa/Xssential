@@ -7,6 +7,7 @@ import {
   GalleryHorizontalEnd,
   ImagePlus,
   Keyboard,
+  Settings2,
   ShieldAlert,
   ShieldCheck,
   type LucideIcon,
@@ -183,7 +184,10 @@ export default function Home() {
             })}
           </div>
 
-          <h2 className="mt-10 mb-3 text-xl font-extrabold text-neutral-900">Settings</h2>
+          <h2 className="mt-10 mb-3 flex items-center gap-2 text-xl font-extrabold text-neutral-900">
+            <Settings2 className="size-5" />
+            Settings
+          </h2>
           <div className="divide-y divide-neutral-100 rounded-2xl border border-neutral-100">
             <div className="flex items-center justify-between gap-4 px-5 py-4">
               <div className="flex items-start gap-3">
