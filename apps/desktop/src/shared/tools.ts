@@ -20,6 +20,8 @@ export interface Settings {
   resume: { tool: ToolId; at: number } | null
   // The X username last signed in with, shown next to "Post on X"
   xHandle: string | null
+  // Where Save puts videos; null means the Downloads folder
+  videoFolder: string | null
 }
 
 export interface XAccount {

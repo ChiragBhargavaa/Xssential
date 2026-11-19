@@ -10,6 +10,7 @@ const defaults: Settings = {
   onboarded: false,
   resume: null,
   xHandle: null,
+  videoFolder: null,
 }
 
 let current: Settings | null = null
@@ -35,3 +36,6 @@ export async function updateSettings(patch: Partial<Settings>): Promise<Settings
   await writeFile(settingsPath(), JSON.stringify(current, null, 2))
   return current
 }
+
+// The folder videos are saved to without asking
+export const videoFolder = (): string => getSettings().videoFolder ?? app.getPath('downloads')

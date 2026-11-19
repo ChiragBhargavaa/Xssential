@@ -1,4 +1,4 @@
-import { app, BrowserWindow, globalShortcut, ipcMain, Menu, shell } from 'electron'
+import { app, BrowserWindow, dialog, globalShortcut, ipcMain, Menu, shell } from 'electron'
 import { electronApp, is, optimizer } from '@electron-toolkit/utils'
 import { autoUpdater } from 'electron-updater'
 import { TOOLS, type ToolId } from '../shared/tools'
@@ -22,7 +22,7 @@ import {
   screenAccess,
 } from './permissions'
 import { isRecording, registerRecorderIpc, requestStopRecording } from './recorder'
-import { getSettings, updateSettings } from './settings'
+import { getSettings, updateSettings, videoFolder } from './settings'
 import { createTray, setTrayRecording, updateTrayShortcut } from './tray'
 import { hideWheel, prepareWheel, toggleWheel } from './wheel'
 import { allAppWindows, createAppWindow, hasVisibleAppWindows } from './windows'
@@ -180,7 +180,31 @@ function registerAppIpc() {
   ipcMain.handle('settings:get', () => {
     const settings = getSettings()
     // False when another app already owns the shortcut
-    return { ...settings, shortcutActive: globalShortcut.isRegistered(settings.shortcut) }
+    return {
+      ...settings,
+      shortcutActive: globalShortcut.isRegistered(settings.shortcut),
+      videoFolderPath: videoFolder(),
+    }
+  })
+
+  ipcMain.handle('settings:choose-video-folder', async (e) => {
+    const win = BrowserWindow.fromWebContents(e.sender)
+    const options: Electron.OpenDialogOptions = {
+      title: 'Save videos to',
+      buttonLabel: 'Choose',
+      defaultPath: videoFolder(),
+      properties: ['openDirectory', 'createDirectory'],
+    }
+    const { canceled, filePaths } = win
+      ? await dialog.showOpenDialog(win, options)
+      : await dialog.showOpenDialog(options)
+    if (!canceled && filePaths[0]) await updateSettings({ videoFolder: filePaths[0] })
+    return videoFolder()
+  })
+
+  ipcMain.handle('settings:reset-video-folder', async () => {
+    await updateSettings({ videoFolder: null })
+    return videoFolder()
   })
 
   ipcMain.handle('settings:set-shortcut', async (_e, accelerator: string) => {

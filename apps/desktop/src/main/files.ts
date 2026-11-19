@@ -1,5 +1,16 @@
-import { open, unlink, writeFile, type FileHandle } from 'node:fs/promises'
-import { basename, dirname, join } from 'node:path'
+import { execFile } from 'node:child_process'
+import {
+  access,
+  mkdir,
+  open,
+  readdir,
+  stat,
+  unlink,
+  writeFile,
+  type FileHandle,
+} from 'node:fs/promises'
+import { basename, dirname, extname, join } from 'node:path'
+import { pathToFileURL } from 'node:url'
 import {
   app,
   BrowserWindow,
@@ -11,6 +22,7 @@ import {
   shell,
 } from 'electron'
 import type { ImageFilter } from '../shared/tools'
+import { videoFolder } from './settings'
 
 type Kind = 'image' | 'video'
 
@@ -46,6 +58,66 @@ async function askSavePath(
   if (canceled || !filePath) return null
   lastDir[kind] = dirname(filePath)
   return filePath
+}
+
+// "name.mp4", then "name 2.mp4", "name 3.mp4"… so nothing is overwritten
+async function uniquePath(dir: string, name: string): Promise<string> {
+  const ext = extname(name)
+  const stem = name.slice(0, name.length - ext.length)
+  for (let i = 1; ; i++) {
+    const path = join(dir, i === 1 ? name : `${stem} ${i}${ext}`)
+    try {
+      await access(path)
+    } catch {
+      return path
+    }
+  }
+}
+
+// Videos copied to the clipboard live here, since the clipboard only holds a reference
+const clipboardDir = () => join(app.getPath('temp'), 'Xssential clipboard')
+
+async function freshClipboardDir(): Promise<string> {
+  const dir = clipboardDir()
+  await mkdir(dir, { recursive: true })
+  // Drop copies from earlier days; anything newer may still be waiting to be pasted
+  const dayAgo = Date.now() - 24 * 60 * 60 * 1000
+  for (const name of await readdir(dir).catch(() => [])) {
+    const path = join(dir, name)
+    const info = await stat(path).catch(() => null)
+    if (info && info.mtimeMs < dayAgo) await unlink(path).catch(() => {})
+  }
+  return dir
+}
+
+// Puts a file (not its contents) on the clipboard, like copying it in Finder or Explorer
+async function copyFileToClipboard(path: string): Promise<void> {
+  if (process.platform === 'win32') {
+    await new Promise<void>((resolve, reject) =>
+      execFile(
+        'powershell.exe',
+        ['-NoProfile', '-NonInteractive', '-Command', 'Set-Clipboard -LiteralPath $args[0]', path],
+        (err) => (err ? reject(err) : resolve()),
+      ),
+    )
+    return
+  }
+  const uri = pathToFileURL(path).href
+  const raw = (format: string, text: string) => ({
+    [`electron application/osclipboard;format="${format}"`]: new Blob([text], {
+      type: 'text/plain',
+    }),
+  })
+  await clipboard.write([
+    new ClipboardItem(
+      process.platform === 'darwin'
+        ? raw('public.file-url', uri)
+        : {
+            ...raw('text/uri-list', `${uri}\r\n`),
+            ...raw('x-special/gnome-copied-files', `copy\n${uri}`),
+          },
+    ),
+  ])
 }
 
 function ownedWriter(e: Electron.IpcMainInvokeEvent, id: number): Writer {
@@ -86,17 +158,44 @@ export function registerFileIpc(): void {
     },
   )
 
-  // Large exports (videos) are streamed to disk in chunks instead of being held in memory
+  // Large exports (videos) are streamed to disk in chunks instead of being held in memory.
+  // "ask" shows a save dialog, "folder" writes straight to the video folder from settings
+  // and "clipboard" writes a temporary copy for clipboard:write-file.
   ipcMain.handle(
     'files:open-write',
-    async (e, args: { name: string; kind: Kind; filters: ImageFilter[] }) => {
-      const path = await askSavePath(e, args.kind, args.name, args.filters)
+    async (
+      e,
+      args: {
+        name: string
+        kind: Kind
+        filters: ImageFilter[]
+        target?: 'ask' | 'folder' | 'clipboard'
+      },
+    ) => {
+      let path: string | null
+      if (args.target === 'folder') {
+        const dir = videoFolder()
+        await mkdir(dir, { recursive: true })
+        path = await uniquePath(dir, safeName(args.name))
+      } else if (args.target === 'clipboard') {
+        path = await uniquePath(await freshClipboardDir(), safeName(args.name))
+      } else {
+        path = await askSavePath(e, args.kind, args.name, args.filters)
+      }
       if (!path) return null
       const id = nextWriterId++
       writers.set(id, { handle: await open(path, 'w'), path, owner: e.sender.id })
       return { id, path }
     },
   )
+
+  // Only files this window finished writing can be copied
+  ipcMain.handle('clipboard:write-file', async (e, id: number) => {
+    const writer = ownedWriter(e, id)
+    if (writer.handle) throw new Error('File is still being written')
+    writers.delete(id)
+    await copyFileToClipboard(writer.path)
+  })
 
   ipcMain.handle('files:write', async (e, id: number, position: number, data: Uint8Array) => {
     const { handle } = ownedWriter(e, id)

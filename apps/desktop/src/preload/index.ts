@@ -26,11 +26,15 @@ const api = {
   getInfo: (): Promise<AppInfo> => ipcRenderer.invoke('app:info'),
 
   settings: {
-    get: (): Promise<Settings & { shortcutActive: boolean }> => ipcRenderer.invoke('settings:get'),
+    get: (): Promise<Settings & { shortcutActive: boolean; videoFolderPath: string }> =>
+      ipcRenderer.invoke('settings:get'),
     setShortcut: (accelerator: string): Promise<{ ok: boolean; error?: string }> =>
       ipcRenderer.invoke('settings:set-shortcut', accelerator),
     setLaunchAtLogin: (enabled: boolean): Promise<void> =>
       ipcRenderer.invoke('settings:set-launch-at-login', enabled),
+    // Opens a folder picker; resolves with the folder now used for saved videos
+    chooseVideoFolder: (): Promise<string> => ipcRenderer.invoke('settings:choose-video-folder'),
+    resetVideoFolder: (): Promise<string> => ipcRenderer.invoke('settings:reset-video-folder'),
   },
 
   permissions: {
@@ -81,6 +85,8 @@ const api = {
       name: string
       kind: Kind
       filters: ImageFilter[]
+      // 'folder' saves to the video folder from settings, 'clipboard' to a temporary copy
+      target?: 'ask' | 'folder' | 'clipboard'
     }): Promise<{ id: number; path: string } | null> =>
       ipcRenderer.invoke('files:open-write', args),
     write: (id: number, position: number, data: Uint8Array): Promise<void> =>
@@ -100,6 +106,8 @@ const api = {
     writeImage: (png: Uint8Array): Promise<void> =>
       ipcRenderer.invoke('clipboard:write-image', png),
     readImage: (): Promise<Uint8Array | null> => ipcRenderer.invoke('clipboard:read-image'),
+    // Copies a file written with openWrite({ target: 'clipboard' }) once it is closed
+    writeFile: (id: number): Promise<void> => ipcRenderer.invoke('clipboard:write-file', id),
   },
 
   x: {

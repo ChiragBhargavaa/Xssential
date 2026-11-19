@@ -174,7 +174,7 @@ export default function VideoStudio({ params }: RouteProps) {
         <EmptyState
           icon={Clapperboard}
           title="Record your screen or bring your own video"
-          description="Trim it, crop it, blur private details, drop the original sound and add free background music. Exports an MP4 that X accepts."
+          description="Trim it, crop it, blur private details, drop the original sound and add free background music. Saves or copies an MP4 that X accepts."
         >
           <Button variant="primary" icon={CircleDot} onClick={() => setStage('pick')}>
             Record screen

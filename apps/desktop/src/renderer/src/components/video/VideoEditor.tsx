@@ -2,20 +2,27 @@ import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { ALL_FORMATS, BlobSource, CanvasSink, Input } from 'mediabunny'
 import {
   CircleDot,
+  Copy,
   Crop,
+  Download,
   Droplets,
   FileVideo,
   MousePointer2,
   Redo2,
   Undo2,
-  Upload,
 } from 'lucide-react'
 import { handleEditorKey, loadStyle, saveStyle } from '../../lib/editor'
 import type { Composition } from '../../lib/composition'
-import { useBitmap, useHistory, useKeydown, type HistoryMode } from '../../lib/hooks'
+import {
+  useBitmap,
+  useHistory,
+  useKeydown,
+  useWindowEvent,
+  type HistoryMode,
+} from '../../lib/hooks'
 import { VIDEO_FRAMES, VIDEO_LIMITS } from '../../lib/presets'
 import { savedToast, toast } from '../../lib/toast'
-import { clamp, errorMessage, formatBytes, modKey } from '../../lib/utils'
+import { clamp, errorMessage, formatBytes, isTextInput, modKey } from '../../lib/utils'
 import { exportLayout, exportVideo, fileWritable, type VideoInfo } from '../../lib/video'
 import { RedactionSection, StyleSections, type RedactionDefaults } from '../Inspector'
 import { Stage, type StageHandle, type StageMode } from '../Stage'
@@ -125,7 +132,10 @@ export function VideoEditor({
     fade: true,
   })
   const [fps, setFps] = useState<'30' | '60'>(info.fps >= 50 ? '60' : '30')
+  // Saves just the edited video, without the frame, padding and background
+  const [plain, setPlain] = useState(false)
   const [exporting, setExporting] = useState<{
+    kind: 'save' | 'copy'
     progress: number
     controller: AbortController
   } | null>(null)
@@ -144,6 +154,21 @@ export function VideoEditor({
   )
   const thumbnails = useThumbnails(clip.file, info.duration)
   const layout = exportLayout({ comp: doc.comp, info })
+  const outputComp = useMemo<Composition>(
+    () =>
+      plain
+        ? {
+            ...doc.comp,
+            frame: 'auto',
+            padding: 0,
+            radius: 0,
+            shadow: 0,
+            background: { kind: 'solid', color: '#000000' },
+          }
+        : doc.comp,
+    [plain, doc.comp],
+  )
+  const outputLayout = plain ? exportLayout({ comp: outputComp, info }) : layout
 
   // Where the music should be for a given video time (it loops from the chosen start)
   const musicTime = useCallback(
@@ -226,33 +251,39 @@ export function VideoEditor({
     setSelectedId(null)
   }
 
-  const exportMp4 = async () => {
-    if (exporting) return
+  // Save writes to the video folder from settings (Downloads unless changed there);
+  // Copy writes a temporary file and puts it on the clipboard, ready to paste
+  const busyRef = useRef(false)
+  const exportMp4 = async (kind: 'save' | 'copy') => {
+    if (busyRef.current) return
+    busyRef.current = true
     videoRef.current?.pause()
     const base = clip.name.replace(/\.[^.]+$/, '') || 'Xssential video'
-    const target = await window.api.files.openWrite({
-      name: `${base}.mp4`,
-      kind: 'video',
-      filters: [{ name: 'MP4 video', extensions: ['mp4'] }],
-    })
-    if (!target) return
     const controller = new AbortController()
-    setExporting({ progress: 0, controller })
+    setExporting({ kind, progress: 0, controller })
+    let target: { id: number; path: string } | null = null
     let size = 0
     let percent = 0
-    const writable = fileWritable(target.id, (end) => {
-      size = Math.max(size, end)
-    })
     try {
+      target = await window.api.files.openWrite({
+        name: `${base}.mp4`,
+        kind: 'video',
+        filters: [{ name: 'MP4 video', extensions: ['mp4'] }],
+        target: kind === 'save' ? 'folder' : 'clipboard',
+      })
+      if (!target) return
+      const writable = fileWritable(target.id, (end) => {
+        size = Math.max(size, end)
+      })
       await exportVideo(
         {
           file: clip.file,
           info,
-          comp: doc.comp,
+          comp: outputComp,
           start: doc.start,
           end: doc.end,
           fps: fps === '60' ? 60 : 30,
-          backgroundImage,
+          backgroundImage: plain ? null : backgroundImage,
           music: music ? { buffer: music.buffer, ...musicSettings } : null,
           keepOriginalAudio: keepOriginal,
           originalVolume,
@@ -267,16 +298,31 @@ export function VideoEditor({
         },
         controller.signal,
       )
-      savedToast(target.path, ` (${formatBytes(size)})`)
+      if (kind === 'save') {
+        savedToast(target.path, ` (${formatBytes(size)})`)
+      } else {
+        await window.api.clipboard.writeFile(target.id)
+        toast(`Copied the video (${formatBytes(size)}). Paste it into a post or a folder.`, {
+          tone: 'success',
+        })
+      }
       if (music?.credit) toast('Remember to credit the music in your post.', { tone: 'info' })
     } catch (err) {
-      await window.api.files.abort(target.id).catch(() => {})
-      if (controller.signal.aborted) toast('Export canceled')
+      if (target) await window.api.files.abort(target.id).catch(() => {})
+      if (controller.signal.aborted) toast(kind === 'save' ? 'Save canceled' : 'Copy canceled')
       else toast(errorMessage(err), { tone: 'error' })
     } finally {
+      busyRef.current = false
       setExporting(null)
     }
   }
+
+  // ⌘C, or Edit → Copy in the menu bar
+  useWindowEvent('copy', (e) => {
+    if (isTextInput(e.target) || window.getSelection()?.toString()) return
+    e.preventDefault()
+    void exportMp4('copy')
+  })
 
   useKeydown((e) => {
     if (exporting) return
@@ -284,7 +330,7 @@ export function VideoEditor({
     const key = e.key.toLowerCase()
     if (mod && (key === 's' || key === 'e')) {
       e.preventDefault()
-      void exportMp4()
+      void exportMp4('save')
       return
     }
     if (
@@ -356,10 +402,22 @@ export function VideoEditor({
         <IconButton icon={FileVideo} label="Open another video" onClick={onOpenVideo} />
         <div className="flex-1" />
         <span className="mr-2 text-xs text-neutral-600 tabular-nums">
-          {layout.width} × {layout.height} · {fps} fps · MP4
+          {outputLayout.width} × {outputLayout.height} · {fps} fps · MP4
         </span>
-        <Button variant="primary" icon={Upload} onClick={exportMp4} title={`Export (${modKey}S)`}>
-          Export MP4
+        <Button
+          icon={Copy}
+          onClick={() => void exportMp4('copy')}
+          title={`Copy the video to paste anywhere (${modKey}C)`}
+        >
+          Copy
+        </Button>
+        <Button
+          variant="primary"
+          icon={Download}
+          onClick={() => void exportMp4('save')}
+          title={`Save to your video folder (${modKey}S). Change the folder in Settings.`}
+        >
+          Save
         </Button>
       </TitleBar>
 
@@ -448,8 +506,14 @@ export function VideoEditor({
               onSettings={setMusicSettings}
             />
           </Section>
-          <Section title="Export">
-            <div className="mb-1.5 text-xs text-neutral-800">Frame rate</div>
+          <Section title="Save and copy">
+            <Toggle
+              label="Without background"
+              description="Just the video, trimmed, cropped and blurred, with no frame, padding or background."
+              checked={plain}
+              onChange={setPlain}
+            />
+            <div className="mt-4 mb-1.5 text-xs text-neutral-800">Frame rate</div>
             <Segmented
               value={fps}
               onChange={setFps}
@@ -495,9 +559,12 @@ export function VideoEditor({
       {exporting && (
         <div className="fade-in fixed inset-0 z-40 flex items-center justify-center bg-black/40">
           <div className="w-96 rounded-2xl bg-white p-6 shadow-xl">
-            <h3 className="text-xl font-extrabold">Exporting video</h3>
+            <h3 className="text-xl font-extrabold">
+              {exporting.kind === 'save' ? 'Saving video' : 'Copying video'}
+            </h3>
             <p className="mt-1 text-xs text-neutral-600">
-              {layout.width} × {layout.height} · {fps} fps · {Math.round(exporting.progress * 100)}%
+              {outputLayout.width} × {outputLayout.height} · {fps} fps ·{' '}
+              {Math.round(exporting.progress * 100)}%
             </p>
             <div className="mt-4">
               <ProgressBar value={exporting.progress} />

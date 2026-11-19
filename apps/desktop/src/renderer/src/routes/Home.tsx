@@ -3,6 +3,7 @@ import {
   Camera,
   CircleDot,
   Clapperboard,
+  FolderOpen,
   GalleryHorizontalEnd,
   ImagePlus,
   Keyboard,
@@ -90,7 +91,9 @@ function ShortcutRecorder({
 }
 
 export default function Home() {
-  const [settings, setSettings] = useState<(Settings & { shortcutActive: boolean }) | null>(null)
+  const [settings, setSettings] = useState<
+    (Settings & { shortcutActive: boolean; videoFolderPath: string }) | null
+  >(null)
   const [version, setVersion] = useState('')
   const access = useScreenAccess()
   const needsPermission = isMac && access !== null && access !== 'granted'
@@ -219,6 +222,46 @@ export default function Home() {
                 />
               )}
             </div>
+
+            {settings && (
+              <div className="flex items-center justify-between gap-4 px-5 py-4">
+                <div className="flex min-w-0 items-start gap-3">
+                  <FolderOpen className="mt-0.5 size-4 shrink-0 text-neutral-600" />
+                  <div className="min-w-0">
+                    <div className="text-[15px] font-bold text-neutral-900">Save videos to</div>
+                    <div
+                      className="mt-0.5 truncate text-[13px] text-neutral-600"
+                      title={settings.videoFolderPath}
+                    >
+                      {settings.videoFolderPath}
+                    </div>
+                  </div>
+                </div>
+                <div className="flex shrink-0 gap-2">
+                  {settings.videoFolder && (
+                    <Button
+                      variant="ghost"
+                      onClick={() =>
+                        void window.api.settings
+                          .resetVideoFolder()
+                          .then(() => window.api.settings.get().then(setSettings))
+                      }
+                    >
+                      Use Downloads
+                    </Button>
+                  )}
+                  <Button
+                    onClick={() =>
+                      void window.api.settings
+                        .chooseVideoFolder()
+                        .then(() => window.api.settings.get().then(setSettings))
+                    }
+                  >
+                    Change…
+                  </Button>
+                </div>
+              </div>
+            )}
 
             {isMac && (
               <div className="flex items-center justify-between gap-4 px-5 py-4">
