@@ -130,12 +130,7 @@ export default function Home() {
             <div className="flex size-14 items-center justify-center rounded-2xl bg-neutral-900 text-3xl font-black text-white">
               X
             </div>
-            <div>
-              <h1 className="text-[23px] font-extrabold tracking-tight">Xssential</h1>
-              <p className="mt-0.5 text-[15px] text-neutral-600">
-                Screenshots, screen recordings and carousels, ready for X.
-              </p>
-            </div>
+            <h1 className="text-[23px] font-extrabold tracking-tight">Xssential</h1>
           </div>
 
           {needsPermission && (
@@ -174,13 +169,13 @@ export default function Home() {
                   key={tool.id}
                   type="button"
                   onClick={() => window.api.tools.launch(tool.id)}
-                  className="group rounded-2xl border border-neutral-100 p-4 text-left transition-colors hover:bg-neutral-50"
+                  className="group h-36 overflow-hidden rounded-2xl border border-neutral-100 p-4 text-left transition-colors hover:bg-neutral-50"
                 >
                   <span className="flex size-10 items-center justify-center rounded-full bg-neutral-100 transition-colors group-hover:bg-neutral-200">
                     <Icon className="size-5 text-neutral-900" />
                   </span>
                   <div className="mt-3 text-[15px] font-bold text-neutral-900">{tool.label}</div>
-                  <div className="mt-1 text-[13px] leading-relaxed text-neutral-600">
+                  <div className="mt-1 line-clamp-2 text-[13px] leading-relaxed text-neutral-600">
                     {tool.hint}
                   </div>
                 </button>
