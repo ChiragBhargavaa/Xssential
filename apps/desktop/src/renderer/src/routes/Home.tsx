@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState } from 'react'
+import { useCallback, useEffect, useRef, useState } from 'react'
 import {
   Camera,
   CircleDot,
@@ -7,7 +7,7 @@ import {
   GalleryHorizontalEnd,
   ImagePlus,
   Keyboard,
-  Settings2,
+  Settings as SettingsIcon,
   ShieldAlert,
   ShieldCheck,
   type LucideIcon,
@@ -26,6 +26,7 @@ const toolIcons: Partial<Record<ToolId, LucideIcon>> = {
   'edit-video': Clapperboard,
   carousel: GalleryHorizontalEnd,
   'edit-image': ImagePlus,
+  settings: SettingsIcon,
 }
 
 function Shortcut({ accelerator, large }: { accelerator: string; large?: boolean }) {
@@ -115,7 +116,12 @@ export default function Home() {
     }
   }, [])
 
-  const tools = TOOLS.filter((t) => t.id !== 'settings')
+  // Settings fills the last slot of the grid and jumps to the settings below
+  const tools = [
+    ...TOOLS.filter((t) => t.id !== 'settings'),
+    ...TOOLS.filter((t) => t.id === 'settings'),
+  ]
+  const settingsRef = useRef<HTMLHeadingElement>(null)
   const trayPlace = isMac
     ? 'menu bar at the top of your screen'
     : 'notification area of the taskbar'
@@ -168,8 +174,12 @@ export default function Home() {
                 <button
                   key={tool.id}
                   type="button"
-                  onClick={() => window.api.tools.launch(tool.id)}
-                  className="group h-36 overflow-hidden rounded-2xl border border-neutral-100 p-4 text-left transition-colors hover:bg-neutral-50"
+                  onClick={() =>
+                    tool.id === 'settings'
+                      ? settingsRef.current?.scrollIntoView({ behavior: 'smooth' })
+                      : window.api.tools.launch(tool.id)
+                  }
+                  className="group flex h-40 flex-col items-start justify-start overflow-hidden rounded-2xl border border-neutral-100 p-4 text-left transition-colors hover:bg-neutral-50"
                 >
                   <span className="flex size-10 items-center justify-center rounded-full bg-neutral-100 transition-colors group-hover:bg-neutral-200">
                     <Icon className="size-5 text-neutral-900" />
@@ -183,8 +193,10 @@ export default function Home() {
             })}
           </div>
 
-          <h2 className="mt-10 mb-3 flex items-center gap-2 text-xl font-extrabold text-neutral-900">
-            <Settings2 className="size-5" />
+          <h2
+            ref={settingsRef}
+            className="mt-10 mb-3 scroll-mt-6 text-xl font-extrabold text-neutral-900"
+          >
             Settings
           </h2>
           <div className="divide-y divide-neutral-100 rounded-2xl border border-neutral-100">
