@@ -13,6 +13,7 @@ import {
   StreamTarget,
   type StreamTargetChunk,
 } from 'mediabunny'
+import { applyPalette, GIFEncoder, quantize } from 'gifenc'
 import { mixAudio, type MusicMix } from './audio'
 import { computeLayout, renderComposite, type Composition } from './composition'
 import { VIDEO_FRAMES, VIDEO_LIMITS } from './presets'
@@ -175,6 +176,74 @@ export async function exportVideo(
   } catch (err) {
     if (output.state !== 'finalized') await output.cancel().catch(() => {})
     throw err
+  } finally {
+    input.dispose()
+  }
+}
+
+// GIFs have no sound and get large quickly, so they are smaller and choppier than MP4s
+export const GIF_FPS = 15
+const GIF_MAX_SIDE = 720
+
+export function gifSize(width: number, height: number) {
+  const k = Math.min(1, GIF_MAX_SIDE / Math.max(width, height))
+  return {
+    width: Math.max(2, Math.round(width * k)),
+    height: Math.max(2, Math.round(height * k)),
+    k,
+  }
+}
+
+// Renders the composition into a looping GIF with a palette per frame
+export async function exportGif(
+  job: Omit<ExportJob, 'fps' | 'music' | 'keepOriginalAudio' | 'originalVolume'>,
+  onProgress: (progress: number) => void,
+  signal: AbortSignal,
+): Promise<Uint8Array> {
+  const layout = exportLayout(job)
+  const size = gifSize(layout.width, layout.height)
+  const duration = Math.max(0.5, job.end - job.start)
+  const total = Math.max(1, Math.round(duration * GIF_FPS))
+  const delay = Math.round(1000 / GIF_FPS)
+
+  const input = new Input({ source: new BlobSource(job.file), formats: ALL_FORMATS })
+  try {
+    const track = await input.getPrimaryVideoTrack()
+    if (!track) throw new Error('This file has no video in it.')
+    const canvas = new OffscreenCanvas(size.width, size.height)
+    const ctx = canvas.getContext('2d', { willReadFrequently: true })!
+    const gif = GIFEncoder()
+    const times = function* () {
+      for (let i = 0; i < total; i++) yield job.start + i / GIF_FPS
+    }
+    const sink = new CanvasSink(track, { poolSize: 3 })
+    let previous: HTMLCanvasElement | OffscreenCanvas | null = null
+    let i = 0
+    for await (const wrapped of sink.canvasesAtTimestamps(times())) {
+      if (signal.aborted) throw new DOMException('Export canceled', 'AbortError')
+      const frame = wrapped?.canvas ?? previous
+      if (frame) {
+        renderComposite(ctx, frame, layout, job.comp, {
+          scale: size.k,
+          time: job.start + i / GIF_FPS,
+          backgroundImage: job.backgroundImage,
+          opaque: '#000000',
+        })
+        previous = frame
+      } else {
+        ctx.fillStyle = '#000'
+        ctx.fillRect(0, 0, size.width, size.height)
+      }
+      const { data } = ctx.getImageData(0, 0, size.width, size.height)
+      const palette = quantize(data, 256)
+      gif.writeFrame(applyPalette(data, palette), size.width, size.height, { palette, delay })
+      i++
+      onProgress(i / total)
+      // Let the progress bar paint between frames
+      if (i % 5 === 0) await new Promise((r) => setTimeout(r, 0))
+    }
+    gif.finish()
+    return gif.bytes()
   } finally {
     input.dispose()
   }

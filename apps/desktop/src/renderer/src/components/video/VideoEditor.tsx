@@ -7,6 +7,7 @@ import {
   Download,
   Droplets,
   FileVideo,
+  ImagePlay,
   MousePointer2,
   Redo2,
   Undo2,
@@ -23,7 +24,15 @@ import {
 import { VIDEO_FRAMES, VIDEO_LIMITS } from '../../lib/presets'
 import { savedToast, toast } from '../../lib/toast'
 import { clamp, errorMessage, formatBytes, isTextInput, modKey } from '../../lib/utils'
-import { exportLayout, exportVideo, fileWritable, type VideoInfo } from '../../lib/video'
+import {
+  exportGif,
+  exportLayout,
+  exportVideo,
+  fileWritable,
+  GIF_FPS,
+  gifSize,
+  type VideoInfo,
+} from '../../lib/video'
 import { RedactionSection, StyleSections, type RedactionDefaults } from '../Inspector'
 import { Stage, type StageHandle, type StageMode } from '../Stage'
 import {
@@ -152,7 +161,7 @@ export function VideoEditor({
     }
   }, [plain])
   const [exporting, setExporting] = useState<{
-    kind: 'save' | 'copy'
+    kind: 'save' | 'copy' | 'gif'
     progress: number
     controller: AbortController
   } | null>(null)
@@ -334,6 +343,60 @@ export function VideoEditor({
     }
   }
 
+  // Copies a GIF file to the clipboard. GIFs have no sound.
+  const copyGif = async () => {
+    if (busyRef.current) return
+    busyRef.current = true
+    videoRef.current?.pause()
+    const base = clip.name.replace(/\.[^.]+$/, '') || 'Xssential video'
+    const controller = new AbortController()
+    setExporting({ kind: 'gif', progress: 0, controller })
+    let target: { id: number; path: string } | null = null
+    let percent = 0
+    try {
+      const bytes = await exportGif(
+        {
+          file: clip.file,
+          info,
+          comp: outputComp,
+          start: doc.start,
+          end: doc.end,
+          backgroundImage: plain ? null : backgroundImage,
+        },
+        (progress) => {
+          const next = Math.floor(progress * 100)
+          if (next === percent) return
+          percent = next
+          setExporting((e) => (e ? { ...e, progress } : e))
+        },
+        controller.signal,
+      )
+      target = await window.api.files.openWrite({
+        name: `${base}.gif`,
+        kind: 'video',
+        filters: [{ name: 'GIF', extensions: ['gif'] }],
+        target: 'clipboard',
+      })
+      if (!target) return
+      await window.api.files.write(target.id, 0, bytes)
+      await window.api.files.close(target.id)
+      await window.api.clipboard.writeFile(target.id)
+      toast(
+        `Copied the GIF (${formatBytes(bytes.byteLength)}). Paste it into a post or a folder.`,
+        {
+          tone: 'success',
+        },
+      )
+    } catch (err) {
+      if (target) await window.api.files.abort(target.id).catch(() => {})
+      if (controller.signal.aborted) toast('Copy canceled')
+      else toast(errorMessage(err), { tone: 'error' })
+    } finally {
+      busyRef.current = false
+      setExporting(null)
+    }
+  }
+
   // ⌘C, or Edit → Copy in the menu bar
   useWindowEvent('copy', (e) => {
     if (isTextInput(e.target) || window.getSelection()?.toString()) return
@@ -421,6 +484,13 @@ export function VideoEditor({
         <span className="mr-2 text-xs text-neutral-600 tabular-nums">
           {outputLayout.width} × {outputLayout.height} · {fps} fps · MP4
         </span>
+        <Button
+          icon={ImagePlay}
+          onClick={() => void copyGif()}
+          title="Copy as a looping GIF, without sound"
+        >
+          Copy GIF
+        </Button>
         <Button
           icon={Copy}
           onClick={() => void exportMp4('copy')}
@@ -575,10 +645,16 @@ export function VideoEditor({
         <div className="fade-in fixed inset-0 z-40 flex items-center justify-center bg-black/40">
           <div className="w-96 rounded-2xl bg-white p-6 shadow-xl">
             <h3 className="text-xl font-extrabold">
-              {exporting.kind === 'save' ? 'Saving video' : 'Copying video'}
+              {exporting.kind === 'save'
+                ? 'Saving video'
+                : exporting.kind === 'gif'
+                  ? 'Copying GIF'
+                  : 'Copying video'}
             </h3>
             <p className="mt-1 text-xs text-neutral-600">
-              {outputLayout.width} × {outputLayout.height} · {fps} fps ·{' '}
+              {exporting.kind === 'gif'
+                ? `${gifSize(outputLayout.width, outputLayout.height).width} × ${gifSize(outputLayout.width, outputLayout.height).height} · ${GIF_FPS} fps · `
+                : `${outputLayout.width} × ${outputLayout.height} · ${fps} fps · `}
               {Math.round(exporting.progress * 100)}%
             </p>
             <div className="mt-4">
