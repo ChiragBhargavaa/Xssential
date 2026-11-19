@@ -11,6 +11,7 @@ import {
 import { TOOLS, type ToolId } from '../../../shared/tools'
 import { useKeydown } from '../lib/hooks'
 import { cx } from '../lib/utils'
+import logo from '../assets/logo.svg'
 
 const icons: Record<ToolId, LucideIcon> = {
   screenshot: Camera,
@@ -156,7 +157,7 @@ export default function Wheel() {
           <span className="text-[11px] leading-tight text-neutral-600">{hovered.hint}</span>
         ) : (
           <>
-            <span className="text-2xl font-black text-neutral-900">X</span>
+            <img src={logo} alt="" className="-my-1 size-12" draggable={false} />
             <span className="text-[10px] leading-tight text-neutral-600">
               keys 1–6
               <br />

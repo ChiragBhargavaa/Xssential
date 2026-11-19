@@ -12,6 +12,7 @@ import {
   ShieldCheck,
   type LucideIcon,
 } from 'lucide-react'
+import logo from '../assets/logo.svg'
 import { TOOLS, type Settings, type ToolId } from '../../../shared/tools'
 import { Button, Kbd, TitleBar, Toggle } from '../components/ui'
 import { useScreenAccess } from '../lib/permissions'
@@ -128,9 +129,7 @@ export default function Home() {
       <main className="flex-1 overflow-y-auto">
         <div className="mx-auto max-w-3xl px-8 py-10">
           <div className="flex items-center gap-4">
-            <div className="flex size-14 items-center justify-center rounded-2xl bg-neutral-900 text-3xl font-black text-white">
-              X
-            </div>
+            <img src={logo} alt="" className="-m-2.5 size-[76px]" draggable={false} />
             <h1 className="text-[23px] font-extrabold tracking-tight">Xssential</h1>
           </div>
 
